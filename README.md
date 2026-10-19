@@ -8,10 +8,11 @@ An audit produces evidence-local verdicts — `SUPPORTED`, `REFUTED`,
 It tests the artefact (code, data, formal statement) on a stated commit in a
 stated environment; it is not a verdict on the paper's scientific value.
 
-This repository is the v0.2 prototype: runnable engine, six checker kinds,
-statistical and formal-verification support, three demo audits, a static
-registry builder, and a long-term operations plan. It is not yet a public
-registry with real papers; the next milestone is 5–10 real audits.
+This repository is v0.3: runnable engine, seven checker kinds, statistical and
+formal-verification support (including a published-paper Lean formalisation
+demo), demo audits, a generated static **registry UI** (landing page, searchable
+browser, per-audit dossier pages), and a long-term operations plan. It is not yet
+a public registry with real papers; the next milestone is 5–10 real audits.
 
 中文概览见 [README.zh-CN.md](README.zh-CN.md)；运营与治理见 [OPS.md](OPS.md)。
 
@@ -203,7 +204,7 @@ their original terms. The registry index data is CC0.
 
 ## Status and limitations
 
-- v0.2 prototype; no public real-paper audits yet.
+- v0.3; the registry currently contains demo audits, not public real-paper audits.
 - Checkers execute shell commands; audit files are executable input — only run
   audits you trust (sandboxing is on the roadmap).
 - The statistical checker assumes independent seeds and a single metric; it does
