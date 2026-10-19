@@ -173,7 +173,9 @@ with ``evidence_comparison``.
   package the causal-mask two-forward audit as a first-class checker.
 - **v0.4** — Lean CI job with a pinned toolchain; optional Z3 extra in CI;
   registry membership workflow (PR + CI verify); audit correction/retraction
-  fields; Zenodo archival and DOI for registry releases.
+  fields; Zenodo archival and DOI for registry releases. The first
+  published-paper formalisation demo (NCC energy identity, arXiv:2607.08897)
+  landed as `examples/lean_paper_ncc/` in v0.2.1.
 - **v1.0** — schema stability, published two or three real audit batches,
   external re-runner(s) other than the authors, and one reproducibility-venue
   submission (TMLR / MLRC "methods and tools" or "meta-reproducibility").

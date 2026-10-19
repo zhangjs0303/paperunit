@@ -1,0 +1,6 @@
+name = "paperunit_leanncc"
+version = "0.1.0"
+defaultTargets = ["PaperNCC"]
+
+[[lean_lib]]
+name = "PaperNCC"

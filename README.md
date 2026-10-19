@@ -145,6 +145,12 @@ not go through" is not evidence about the paper. Only a counterexample (or a
 failed preregistered check) can `REFUTE`. Autoformalisation, if used, is labelled
 as a hypothesis and must be reviewed by a human before being trusted.
 
+A worked example: [`examples/lean_paper_ncc/`](examples/lean_paper_ncc/) takes the
+Neural Computability Condition equations from a 2026 spiking-neural-network CSP
+solver (arXiv:2607.08897, Section 2.2), translates the algebraic core to Lean 4
+by hand, and checks it with `lake build`. Its `paper.md` states exactly what was
+and was not formalised (integer weights, 3 neurons, no Mathlib, no exp/log step).
+
 ## Repository layout
 
 ```

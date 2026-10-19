@@ -1,0 +1,116 @@
+{
+  "schema": "paperunit/report/v1",
+  "tool": {
+    "name": "paperunit",
+    "version": "0.2.1"
+  },
+  "target": {
+    "title": "Formal audit: NCC energy identity from arXiv:2607.08897 (3-neuron integer instance)",
+    "paper": "examples/lean_paper_ncc/paper.md",
+    "repo_commit": "leanprover/lean4:v4.35.0; formalisation authored by paperunit (auditor), not by the paper authors",
+    "audited_by": "无常",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "energy drop equals 2*u_i for all three neurons (symmetric weights, zero self-coupling)",
+      "u_i is independent of x_i",
+      "beta=3 temperature scaling of the log-odds (algebraic level)"
+    ],
+    "not_tested": [
+      "real-valued weights/biases (this formalisation uses integers)",
+      "networks larger than 3 neurons",
+      "the exp/log step from p proportional to exp(-E) to conditional log-odds",
+      "any empirical or CSP-solving claim of the paper",
+      "correctness of the auditor's LaTeX-to-Lean translation"
+    ]
+  },
+  "policy": {
+    "timeout_s": 120.0,
+    "confidence": 0.95
+  },
+  "environment": {
+    "python": "3.13.11",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "audit_file": "examples/lean_paper_ncc/audit.json"
+  },
+  "generated_at": "2026-10-19T13:15:25Z",
+  "claims": [
+    {
+      "id": "L1",
+      "kind": "lean4",
+      "text": "Lean 4 checks the NCC energy identity (ncc0/ncc1/ncc2), independence lemmas and beta=3 scaling in PaperNCC.lean, with no sorry.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "Lean build succeeded ('lake build', exit 0) and no `sorry` placeholders were found.",
+      "evidence": {
+        "allow_sorry": false,
+        "build_cmd": "lake build",
+        "lean_files": [
+          "PaperNCC.lean"
+        ],
+        "project_dir": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/lean_paper_ncc/lean_project",
+        "run": {
+          "cmd": "lake build",
+          "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/lean_paper_ncc/lean_project",
+          "duration_s": 0.1504,
+          "evidence_sha256": "898da5baa9476463b8000d94babf42b7935afe335f53005baaa11e92a8b2d168",
+          "exit_code": 0,
+          "stderr_excerpt": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_excerpt": "Build completed successfully (3 jobs).\n",
+          "stdout_sha256": "31da234bfb532d5d412798fc13e5b1d95ac91fa58156c6feb697b60d6a371c19",
+          "timed_out": false,
+          "timeout_s": 300.0
+        },
+        "sorry_locations": [],
+        "theorem_check": {
+          "files": [
+            "PaperNCC.lean"
+          ],
+          "found": true,
+          "requested": "ncc0"
+        },
+        "toolchain": {
+          "available_cmd": "lean --version",
+          "probes": [
+            {
+              "cmd": "lean --version",
+              "run": {
+                "cmd": "lean --version",
+                "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/lean_paper_ncc/lean_project",
+                "duration_s": 0.0401,
+                "evidence_sha256": "b203fa47d822a292a05528feafe7a471754ccf6bb223f3d0288e60abf8dd09ea",
+                "exit_code": 0,
+                "stderr_excerpt": "",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_excerpt": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)\n",
+                "stdout_sha256": "469679dd8c6cec218a7a5e9a36c7a27decc968dacfe057ab3083f0ef43600dac",
+                "timed_out": false,
+                "timeout_s": 30.0
+              }
+            }
+          ]
+        },
+        "trust_model": "A failed Lean build means the audit's formalisation did not go through; it is not evidence against the paper's claim and not evidence of misconduct. Only a successful proof check can support the claim.",
+        "verdict_basis": "successful build + sorry scan"
+      },
+      "uncertainty": null
+    }
+  ],
+  "verdict_counts": {
+    "SUPPORTED": 1,
+    "REFUTED": 0,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 0
+  },
+  "limits": [
+    "real-valued weights/biases (this formalisation uses integers)",
+    "networks larger than 3 neurons",
+    "the exp/log step from p proportional to exp(-E) to conditional log-odds",
+    "any empirical or CSP-solving claim of the paper",
+    "correctness of the auditor's LaTeX-to-Lean translation",
+    "An audit tests only the listed claims on the stated commit in the stated environment; it is not a verdict on the paper's scientific value, and it carries no aggregate score."
+  ],
+  "report_sha256": "79715deb0d30ea65fdd832b699d954e7e2ca81f0f6d033296f122855d9f2304a"
+}

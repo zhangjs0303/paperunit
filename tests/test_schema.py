@@ -40,6 +40,12 @@ class SchemaTests(unittest.TestCase):
             self.assertEqual(audit["schema"], "paperunit/v1")
             self.assertGreaterEqual(len(audit["claims"]), 1)
 
+    def test_all_example_audits_load(self) -> None:
+        for audit_path in sorted((ROOT / "examples").glob("*/audit.json")):
+            audit = load_audit(audit_path)
+            self.assertEqual(audit["schema"], "paperunit/v1", audit_path)
+            self.assertGreaterEqual(len(audit["claims"]), 1, audit_path)
+
     def test_duplicate_claim_id_rejected(self) -> None:
         audit = _minimal()
         audit["claims"].append(dict(audit["claims"][0]))

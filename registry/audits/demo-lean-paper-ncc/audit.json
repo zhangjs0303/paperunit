@@ -1,0 +1,39 @@
+{
+  "schema": "paperunit/v1",
+  "target": {
+    "title": "Formal audit: NCC energy identity from arXiv:2607.08897 (3-neuron integer instance)",
+    "paper": "examples/lean_paper_ncc/paper.md",
+    "repo_commit": "leanprover/lean4:v4.35.0; formalisation authored by paperunit (auditor), not by the paper authors",
+    "audited_by": "无常",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "energy drop equals 2*u_i for all three neurons (symmetric weights, zero self-coupling)",
+      "u_i is independent of x_i",
+      "beta=3 temperature scaling of the log-odds (algebraic level)"
+    ],
+    "not_tested": [
+      "real-valued weights/biases (this formalisation uses integers)",
+      "networks larger than 3 neurons",
+      "the exp/log step from p proportional to exp(-E) to conditional log-odds",
+      "any empirical or CSP-solving claim of the paper",
+      "correctness of the auditor's LaTeX-to-Lean translation"
+    ]
+  },
+  "claims": [
+    {
+      "id": "L1",
+      "text": "Lean 4 checks the NCC energy identity (ncc0/ncc1/ncc2), independence lemmas and beta=3 scaling in PaperNCC.lean, with no sorry.",
+      "kind": "lean4",
+      "check": {
+        "project_dir": "lean_project",
+        "build_cmd": "lake build",
+        "allow_sorry": false,
+        "theorem": "ncc0",
+        "timeout_s": 300
+      },
+      "preregistered": true
+    }
+  ]
+}
