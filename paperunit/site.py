@@ -338,7 +338,7 @@ def _window(item: dict[str, Any] | None) -> str:
     if item is None:
         return """
 <div class="window window--empty" aria-hidden="true">
-  <div class="window__bar"><span class="window__dot"></span><span class="window__dot"></span><span class="window__dot"></span><span class="window__bar-title">paperunit</span></div>
+  <div class="window__bar"><span class="window__bar-title">paperunit</span></div>
   <div class="window__body">
     <p class="window__eyebrow">Audit dossier</p>
     <h2 class="window__title">No audits indexed yet.</h2>
@@ -355,7 +355,6 @@ def _window(item: dict[str, Any] | None) -> str:
     return f"""
 <div class="window" aria-hidden="true">
   <div class="window__bar">
-    <span class="window__dot"></span><span class="window__dot"></span><span class="window__dot"></span>
     <span class="window__bar-title">paperunit — audit dossier</span>
   </div>
   <div class="window__body">
@@ -387,7 +386,7 @@ def _promo_card(item: dict[str, Any], index: int) -> str:
   </div>
   <div class="promo__chips">{_tally(_counts(entry), compact=True)}</div>
   <div class="mini" aria-hidden="true">
-    <div class="mini__bar"><span></span><span></span><span></span></div>
+    <div class="mini__bar"><span></span></div>
     <div class="mini__rows">{rows}</div>
   </div>
   <p class="promo__path">{_e(entry.get('report_path'))}</p>
@@ -514,7 +513,7 @@ def render_landing(loaded: list[dict[str, Any]]) -> str:
     never a false verdict. Every report can be checked by someone who does not
     trust its author.</p>
     <div class="terminal reveal">
-      <div class="terminal__bar"><i></i><i></i><i></i><span>paperunit — zsh</span></div>
+      <div class="terminal__bar"><span>paperunit — zsh</span></div>
       <pre tabindex="0"><span class="cmt"># claim → check → verdict → report → verify</span>
 <span class="cmd">cd paperunit</span>
 <span class="cmd">python3 -m paperunit run</span>    <span class="prm">--audit</span> examples/lean_paper_ncc/audit.json <span class="prm">--out</span> out/lean
