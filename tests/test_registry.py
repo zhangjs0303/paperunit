@@ -163,10 +163,10 @@ class RegistryBuildTest(unittest.TestCase):
         self.assertIn("NOT_RUN", page)
         self.assertIn("paper_b/audit_report.json", page)
         # Two audit cards on the landing page.
-        self.assertEqual(page.count('class="case reveal"'), 2)
+        self.assertEqual(page.count('<a class="promo'), 2)
 
         registry_page = (self.out / "audits" / "index.html").read_text(encoding="utf-8")
-        self.assertEqual(registry_page.count('class="audit-row"'), 2)
+        self.assertEqual(registry_page.count('class="audit-card"'), 2)
         self.assertIn(full["target"]["title"], registry_page)
 
         detail = (self.out / "audits" / "paper_a.html").read_text(encoding="utf-8")

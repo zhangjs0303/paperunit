@@ -8,7 +8,7 @@ An audit produces evidence-local verdicts — `SUPPORTED`, `REFUTED`,
 It tests the artefact (code, data, formal statement) on a stated commit in a
 stated environment; it is not a verdict on the paper's scientific value.
 
-This repository is v0.3: runnable engine, seven checker kinds, statistical and
+This repository is v0.4: runnable engine, seven checker kinds, statistical and
 formal-verification support (including a published-paper Lean formalisation
 demo), demo audits, a generated static **registry UI** (landing page, searchable
 browser, per-audit dossier pages), and a long-term operations plan. It is not yet
@@ -42,11 +42,13 @@ python3 -m paperunit registry build --audits-dir registry/audits --out registry/
 
 `registry build` also generates a small static site: a landing page, a searchable
 registry and one dossier page per audit (commands, evidence, uncertainty, limits,
-author-response slot). The UI is Liquid Glass-inspired: frosted translucency,
-specular edges and floating layers over a slow aurora, in light and dark mode.
-It is plain HTML/CSS with a small progressive-enhancement script, uses the system
-font stack, and makes no external requests. Open `registry/site/index.html`
-directly or let CI deploy it to GitHub Pages.
+author-response slot). The UI follows apple.com's design language: a slim
+translucent global nav, SF-style display type, generous whitespace, alternating
+white / #f5f5f7 / black sections, gallery tiles with product-like windows and
+Apple-blue pill buttons. It is plain HTML/CSS with a small
+progressive-enhancement script, uses the system font stack, and makes no external
+requests. Open `registry/site/index.html` directly or let CI deploy it to GitHub
+Pages.
 
 `run` writes `audit_report.json` (machine-readable, digest-bearing) and
 `report.md` (human-readable: scope, verdicts, evidence, uncertainty, limits).
@@ -165,7 +167,7 @@ and was not formalised (integer weights, 3 neurons, no Mathlib, no exp/log step)
 ```
 paperunit/
   paperunit/            # package: cli, engine, schema, report, registry, site, checkers/
-    site_assets/       # Liquid Glass stylesheet + tiny JS enhancement
+    site_assets/       # apple.com-inspired stylesheet + tiny JS enhancement
   examples/            # toy/redteam/stats/causal/lean/z3 demos + a published-paper formalisation
   tests/               # stdlib unittest
   registry/            # audit reports + generated site (landing, browser, dossiers)
@@ -205,7 +207,7 @@ their original terms. The registry index data is CC0.
 
 ## Status and limitations
 
-- v0.3; the registry currently contains demo audits, not public real-paper audits.
+- v0.4; the registry currently contains demo audits, not public real-paper audits.
 - Checkers execute shell commands; audit files are executable input — only run
   audits you trust (sandboxing is on the roadmap).
 - The statistical checker assumes independent seeds and a single metric; it does

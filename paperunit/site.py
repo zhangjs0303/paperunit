@@ -1,10 +1,13 @@
 """Static site generation for the paperunit audit registry.
 
-The site is a small, dependency-free "evidence ledger": a landing page, an
-auditable registry and one dossier page per audit report.  Everything is
-generated from ``audit_report.json`` files with the standard library; the only
-assets are a stylesheet, a small progressive-enhancement script and a few
-the Liquid Glass stylesheet and tiny enhancement script.
+The site is a small, dependency-free product site: a landing page, an audit
+registry and one dossier page per report.  Everything is generated from
+``audit_report.json`` files with the standard library; the only assets are a
+stylesheet and a small progressive-enhancement script.
+
+Design reference: apple.com — a slim translucent global nav, very large SF-style
+display type, generous whitespace, alternating white / #f5f5f7 / black bands,
+gallery tiles with product-like visuals, pill buttons and blue text links.
 
 Design constraints:
 
@@ -29,8 +32,6 @@ SITE_ASSETS = Path(__file__).resolve().parent / "site_assets"
 GITHUB_URL = "https://github.com/zhangjs0303/paperunit"
 
 VERDICTS: tuple[str, ...] = ("SUPPORTED", "REFUTED", "INCONCLUSIVE", "NOT_RUN")
-# The UI keeps the raw verdict tokens: they are the machine-readable contract,
-# and the meaning is always adjacent (legend / tally caption).
 VERDICT_LABEL = {verdict: verdict for verdict in VERDICTS}
 VERDICT_MEANING = {
     "SUPPORTED": "every preregistered expectation passed",
@@ -42,10 +43,10 @@ VERDICT_MEANING = {
 FAVICON = (
     "data:image/svg+xml,"
     "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E"
-    "%3Crect width='32' height='32' fill='%23191510'/%3E"
-    "%3Crect x='4' y='4' width='24' height='24' fill='%23b9371b'/%3E"
-    "%3Ctext x='16' y='23' font-family='monospace' font-size='17' "
-    "text-anchor='middle' fill='%23f4efe3'%3EP%3C/text%3E%3C/svg%3E"
+    "%3Crect width='32' height='32' rx='7' fill='%231d1d1f'/%3E"
+    "%3Ctext x='16' y='23' font-family='-apple-system,Helvetica,Arial' "
+    "font-size='17' font-weight='600' text-anchor='middle' "
+    "fill='%23ffffff'%3EP%3C/text%3E%3C/svg%3E"
 )
 
 
@@ -60,48 +61,60 @@ def _e(value: Any) -> str:
 
 
 def _num(value: Any) -> str:
-    if isinstance(value, float):
-        return f"{value:.6g}"
+    """Format a numeric value compactly; never raise."""
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if isinstance(value, (int, float)):
+        try:
+            return f"{value:.6g}"
+        except (TypeError, ValueError, OverflowError):  # pragma: no cover
+            return _e(value)
     return _e(value)
 
 
 def _json(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    try:
+        return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    except (TypeError, ValueError):  # pragma: no cover - defensive
+        return repr(value)
 
 
 def _short(value: Any, length: int = 16) -> str:
     text = "" if value is None else str(value)
-    return text[:length] + ("..." if len(text) > length else "")
+    return text[:length] + "…" if len(text) > length else text
 
 
 def _truncate(value: Any, length: int = 240) -> str:
-    text = "" if value is None else str(value)
-    text = " ".join(text.split())
-    return text if len(text) <= length else text[: length - 1] + "…"
+    text = " ".join(("" if value is None else str(value)).split())
+    return text[: length - 1] + "…" if len(text) > length else text
 
 
 def _tally(counts: dict[str, int], compact: bool = False) -> str:
-    chips = []
+    total = sum(int(counts.get(verdict, 0)) for verdict in VERDICTS)
+    if total <= 0:
+        return '<span class="chip chip--NOT_RUN">no claims</span>'
+    parts = []
     for verdict in VERDICTS:
         count = int(counts.get(verdict, 0))
-        if count == 0 and compact:
+        if count <= 0:
             continue
-        chips.append(
-            f'<span class="chip chip--{verdict}">{VERDICT_LABEL[verdict]} · {count}</span>'
-        )
-    if not chips:
-        chips.append('<span class="chip chip--plain">no claims</span>')
-    return "".join(chips)
+        if compact:
+            parts.append(f'<span class="chip chip--{verdict}">{verdict} {count}</span>')
+        else:
+            parts.append(f'<span class="chip chip--{verdict}">{VERDICT_LABEL[verdict]}</span>')
+    return "".join(parts)
 
 
 def _counts(entry: dict[str, Any]) -> dict[str, int]:
-    raw = entry.get("verdict_counts") or {}
-    return {verdict: int(raw.get(verdict, 0) or 0) for verdict in VERDICTS}
+    counts = entry.get("verdict_counts") or {}
+    return {
+        verdict: int(counts.get(verdict, 0)) if isinstance(counts, dict) else 0
+        for verdict in VERDICTS
+    }
 
 
 def _total_claims(entry: dict[str, Any]) -> int:
-    counts = _counts(entry)
-    return sum(counts.values())
+    return sum(_counts(entry).values())
 
 
 def _page(
@@ -125,54 +138,39 @@ def _page(
         nav_html += f'<a href="{href}"{current}>{label}</a>'
 
     return f"""<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
 <title>{_e(title)}</title>
 <meta name="description" content="{_e(description)}">
-<meta name="color-scheme" content="light dark">
 <link rel="icon" href="{FAVICON}">
 <link rel="stylesheet" href="{root}assets/style.css">
-<script>
-try {{
-  var t = localStorage.getItem("paperunit-theme");
-  if (t === "dark" || (t === null && matchMedia("(prefers-color-scheme: dark)").matches)) {{
-    document.documentElement.setAttribute("data-theme", "dark");
-  }}
-}} catch (err) {{}}
-</script>
 </head>
 <body class="{_e(body_class)}">
 <a class="skip-link" href="#main">Skip to content</a>
-<div class="ambient" aria-hidden="true">
-  <span class="orb orb--1"></span>
-  <span class="orb orb--2"></span>
-  <span class="orb orb--3"></span>
-</div>
-<header class="topbar">
-  <div class="shell topbar__inner">
+<header class="global-nav">
+  <div class="global-nav__inner">
     <a class="brand" href="{root}index.html">
       <span class="brand__mark" aria-hidden="true">P</span>
-      <span class="brand__word"><b>paperunit</b><span>executable paper audits</span></span>
+      <span class="brand__name">paperunit</span>
     </a>
-    <nav class="nav" aria-label="Primary">
+    <nav class="global-nav__links" aria-label="Primary">
       {nav_html}
-      <a href="{GITHUB_URL}" rel="noopener">GitHub ↗</a>
-      <button class="theme-toggle" type="button" data-theme-toggle hidden
-              aria-pressed="false">
-        <span class="sr-only">Switch theme:</span> <span data-theme-label>Dark</span>
-      </button>
     </nav>
+    <div class="global-nav__actions">
+      <a class="global-nav__link" href="{GITHUB_URL}" rel="noopener">GitHub ↗</a>
+    </div>
   </div>
 </header>
-<main id="main" class="skip-anchor">
+<main id="main">
 {body}
 </main>
 <footer class="footer">
-  <div class="shell">
-    <div class="footer__grid">
-      <div class="footer__brand">
+  <div class="footer__inner">
+    <div class="footer__columns">
+      <div class="footer__about">
         <b>paperunit</b>
         <p>Bind a paper's claims to checks a stranger can execute. Verdicts are
         evidence-local; no scores, no rankings. 可执行论文审计 —— 有证据，不排名。</p>
@@ -204,9 +202,15 @@ try {{
         </ul>
       </div>
     </div>
-    <div class="footer__meta">
-      <span>Generated statically from audit_report.json · paperunit {__version__}</span>
-      <span>An audit is evidence, not a verdict on a paper's worth.</span>
+    <p class="footer__legal">
+      An audit tests only the listed claims on the stated artefact in the stated
+      environment. It does not judge scientific value, author conduct or research
+      integrity. An audit is evidence, not a verdict on a paper's worth.
+    </p>
+    <div class="footer__bottom">
+      <span>Copyright © 2026 无常 / paperunit contributors. Generated statically
+      from <code>audit_report.json</code> · paperunit {__version__}.</span>
+      <span>No tracker, no cookies, no external requests.</span>
     </div>
   </div>
 </footer>
@@ -257,7 +261,7 @@ def _copy_raw_artifacts(
 
 
 # ---------------------------------------------------------------------------
-# landing page
+# shared fragments
 # ---------------------------------------------------------------------------
 
 
@@ -268,7 +272,7 @@ def _aggregate(loaded: list[dict[str, Any]]) -> dict[str, Any]:
         counts = _counts(item["entry"])
         for verdict in VERDICTS:
             verdicts[verdict] += counts[verdict]
-        claims += counts_sum(counts)
+        claims += sum(counts.values())
     latest = loaded[0]["entry"].get("date", "") if loaded else ""
     return {
         "audits": len(loaded),
@@ -278,67 +282,132 @@ def _aggregate(loaded: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def counts_sum(counts: dict[str, int]) -> int:
-    return sum(int(counts.get(verdict, 0)) for verdict in VERDICTS)
-
-
 def _verdict_bars(counts: dict[str, int]) -> str:
-    total = counts_sum(counts)
+    total = sum(counts.values())
     if total <= 0:
         return '<div class="verdict-bars"><span class="b-none" style="width:100%"></span></div>'
-    spans = []
     classes = {
         "SUPPORTED": "b-ok",
         "REFUTED": "b-bad",
         "INCONCLUSIVE": "b-warn",
         "NOT_RUN": "b-none",
     }
+    spans = []
     for verdict in VERDICTS:
         count = counts.get(verdict, 0)
         if count <= 0:
             continue
         width = 100.0 * count / total
-        spans.append(
-            f'<span class="{classes[verdict]}" style="width:{width:.2f}%"></span>'
-        )
-    return f'<div class="verdict-bars" aria-hidden="true">{"".join(spans)}</div>'
-
-
-def _case_card(item: dict[str, Any], index: int) -> str:
-    entry = item["entry"]
-    slug = entry["slug"]
-    date = entry.get("date") or "undated"
-    title = entry.get("title") or "untitled audit"
-    by = entry.get("audited_by") or "unknown"
-    return f"""
-<article class="case reveal" style="--i:{index % 6}">
-  <div class="case__no"><span>No. {index + 1:03d}</span><span>{_e(date)}</span></div>
-  <h3><a href="audits/{_e(slug)}.html">{_e(title)}</a></h3>
-  <p class="case__by">audited by {_e(by)}</p>
-  <div class="case__tally">{_tally(_counts(entry), compact=True)}</div>
-  <span class="case__path">{_e(entry.get("report_path"))}</span>
-</article>
-"""
+        spans.append(f'<span class="{classes[verdict]}" style="width:{width:.2f}%"></span>')
+    return '<div class="verdict-bars" aria-hidden="true">' + "".join(spans) + "</div>"
 
 
 def _empty_state() -> str:
     return """
 <div class="empty-state">
   <p>No audits yet · 尚无审计报告</p>
-  <p class="mono">Add a directory containing <code>audit_report.json</code> to
+  <p>Add a directory containing <code>audit_report.json</code> to
   <code>registry/audits/</code> and rebuild.</p>
 </div>
 """
 
 
+def _claim_rows(report: dict[str, Any], limit: int = 3) -> str:
+    claims = report.get("claims")
+    if not isinstance(claims, list):
+        return ""
+    rows = []
+    for claim in claims:
+        if not isinstance(claim, dict):
+            continue
+        text = _truncate(claim.get("text") or claim.get("id") or "claim", 120)
+        verdict = claim.get("verdict")
+        if verdict not in VERDICTS:
+            verdict = "NOT_RUN"
+        rows.append(
+            f'<div class="mini__row"><span>{_e(text)}</span>'
+            f'<span class="chip chip--{verdict}">{verdict}</span></div>'
+        )
+        if len(rows) >= limit:
+            break
+    return "".join(rows)
+
+
+def _window(item: dict[str, Any] | None) -> str:
+    """A product-shot window showing a real audit dossier."""
+    if item is None:
+        return """
+<div class="window window--empty" aria-hidden="true">
+  <div class="window__bar"><span class="window__dot"></span><span class="window__dot"></span><span class="window__dot"></span><span class="window__bar-title">paperunit</span></div>
+  <div class="window__body">
+    <p class="window__eyebrow">Audit dossier</p>
+    <h2 class="window__title">No audits indexed yet.</h2>
+    <p class="window__by">Add an audit_report.json and rebuild the registry.</p>
+  </div>
+</div>
+"""
+    entry = item["entry"]
+    report = item["report"]
+    counts = _counts(entry)
+    rows = _claim_rows(report, 3)
+    if not rows:
+        rows = '<div class="mini__row"><span>This report contains no claims.</span></div>'
+    return f"""
+<div class="window" aria-hidden="true">
+  <div class="window__bar">
+    <span class="window__dot"></span><span class="window__dot"></span><span class="window__dot"></span>
+    <span class="window__bar-title">paperunit — audit dossier</span>
+  </div>
+  <div class="window__body">
+    <p class="window__eyebrow">Audit dossier · No. 001 · {_e(entry.get('date') or 'undated')}</p>
+    <h2 class="window__title">{_e(entry.get('title') or 'untitled audit')}</h2>
+    <p class="window__by">audited by {_e(entry.get('audited_by') or 'unknown')} · {_total_claims(entry)} claims</p>
+    <div class="window__chips">{_tally(counts, compact=True)}</div>
+    <div class="window__list">{rows}</div>
+    <div class="window__foot"><span>{_e(entry.get('report_path'))}</span><span>report_sha256 {_e(_short(entry.get('report_sha256'), 12))}</span></div>
+  </div>
+</div>
+"""
+
+
+def _promo_card(item: dict[str, Any], index: int) -> str:
+    entry = item["entry"]
+    report = item["report"]
+    slug = entry["slug"]
+    dark = index % 2 == 1
+    rows = _claim_rows(report, 2)
+    if not rows:
+        rows = '<div class="mini__row"><span>No claims in this report.</span></div>'
+    return f"""
+<a class="promo{' promo--dark' if dark else ''} reveal" style="--i:{index}" href="audits/{_e(slug)}.html">
+  <div class="promo__head">
+    <p class="promo__kicker">No. {index + 1:03d} · {_e(entry.get('date') or 'undated')}</p>
+    <h3>{_e(entry.get('title') or 'untitled audit')}</h3>
+    <p class="promo__by">audited by {_e(entry.get('audited_by') or 'unknown')}</p>
+  </div>
+  <div class="promo__chips">{_tally(_counts(entry), compact=True)}</div>
+  <div class="mini" aria-hidden="true">
+    <div class="mini__bar"><span></span><span></span><span></span></div>
+    <div class="mini__rows">{rows}</div>
+  </div>
+  <p class="promo__path">{_e(entry.get('report_path'))}</p>
+  <span class="promo__more">Open dossier ›</span>
+</a>
+"""
+
+
+# ---------------------------------------------------------------------------
+# landing page
+# ---------------------------------------------------------------------------
+
+
 def render_landing(loaded: list[dict[str, Any]]) -> str:
     stats = _aggregate(loaded)
     counts = stats["verdicts"]
-    latest_cases = "".join(
-        _case_card(item, index) for index, item in enumerate(loaded[:3])
-    )
-    if not latest_cases:
-        latest_cases = _empty_state()
+    latest = loaded[0] if loaded else None
+    promos = "".join(_promo_card(item, index) for index, item in enumerate(loaded[:2]))
+    if not promos:
+        promos = _empty_state()
 
     verdict_legend = "".join(
         f"""
@@ -375,11 +444,9 @@ def render_landing(loaded: list[dict[str, Any]]) -> str:
     principles_html = "".join(
         f"""
       <div class="principle reveal" style="--i:{index}">
-        <span class="principle__no">{number}</span>
-        <div>
-          <h3>{title}</h3>
-          <p>{copy}</p>
-        </div>
+        <span class="principle__num">{number}</span>
+        <h3>{title}</h3>
+        <p>{copy}</p>
       </div>"""
         for index, (number, title, copy) in enumerate(principles)
     )
@@ -392,79 +459,61 @@ def render_landing(loaded: list[dict[str, Any]]) -> str:
         "# Verification: REPRODUCIBLE"
     )
 
+    meta = (
+        f"{stats['audits']} audits · {stats['claims']} claims · "
+        f"latest {_e(stats['latest'] or '—')}"
+    )
+
     return f"""
-<section class="hero shell">
-  <div class="reveal">
-    <p class="eyebrow">Executable paper audits · 可执行论文审计</p>
-    <h1>Every claim gets a <em>re-run.</em></h1>
-    <p class="hero__lede">
-      paperunit binds a paper's claim to a command a stranger can execute. It
-      publishes the evidence, the uncertainty and the limits — never a score.
-      A verdict is about one claim on one artefact, not about a paper's worth.
-    </p>
-    <div class="hero__actions">
-      <a class="btn btn--primary" href="audits/index.html">Browse the registry →</a>
-      <a class="btn" href="#how">How it works</a>
-      <a class="btn btn--ghost" href="{GITHUB_URL}" rel="noopener">Source on GitHub ↗</a>
+<section class="hero">
+  <div class="shell hero__copy reveal">
+    <p class="eyebrow">Executable paper audits</p>
+    <h1>Every claim<br>gets a <span class="hero__accent">re-run.</span></h1>
+    <p class="hero__tagline">Evidence, not a score.</p>
+    <p class="hero__note">paperunit binds a paper's claim to a command a stranger
+    can execute — then publishes the evidence, the uncertainty and the limits.
+    A verdict is about one claim on one artefact, not about a paper's worth.</p>
+    <div class="cta">
+      <a class="button" href="audits/index.html">Browse the registry</a>
+      <a class="button button--secondary" href="#how">How it works</a>
     </div>
-    <p class="hero__footnote">NO SCORES · NO RANKINGS · EVIDENCE-LOCAL VERDICTS</p>
+    <p class="hero__meta">{meta} · no scores · no rankings</p>
   </div>
-  <aside class="ledger reveal" style="--i:1" aria-label="Audit ledger summary">
-    <div class="ledger__label"><span>Audit ledger</span><b>live</b></div>
-    <div class="stats">
-      <div class="stat"><b>{stats['audits']}</b><span>audits indexed</span></div>
-      <div class="stat"><b>{stats['claims']}</b><span>claims executed</span></div>
-      <div class="stat"><b>{counts['SUPPORTED']}</b><span>supported</span></div>
-      <div class="stat"><b>{counts['REFUTED']}</b><span>refuted</span></div>
-    </div>
-    {_verdict_bars(counts)}
-    <p class="ledger__note">
-      Latest report date: <span class="mono">{_e(stats['latest'] or '—')}</span>.
-      The counts are a ledger, not a score: read the individual reports.
-    </p>
-    <span class="stamp">Evidence, not vibes</span>
-  </aside>
+  <div class="shell hero__shot reveal" style="--i:1">
+    <div class="hero__glow" aria-hidden="true"></div>
+    {_window(latest)}
+  </div>
 </section>
 
-<section class="section shell" id="how">
-  <div class="section__head">
-    <div>
-      <p class="kicker">01 / Method</p>
-      <h2>From a sentence in a paper to a verdict you can re-run.</h2>
-    </div>
-    <p>No review committee, no reputation points. The unit of work is a claim
-    bound to an executable check and shipped with its evidence.</p>
+<section class="band band--dark" id="how">
+  <div class="shell">
+    <p class="eyebrow eyebrow--light">The method</p>
+    <h2>From a sentence in a paper<br>to a verdict you can re-run.</h2>
+    <p class="band__lede">No review committee, no reputation points. The unit of
+    work is a claim bound to an executable check and shipped with its evidence.</p>
+    <div class="steps">{steps_html}</div>
+    <div class="legend">{verdict_legend}</div>
   </div>
-  <div class="steps">{steps_html}</div>
-  <div style="margin-top:26px" class="legend">{verdict_legend}</div>
 </section>
 
-<section class="section shell" id="audits">
-  <div class="section__head">
-    <div>
-      <p class="kicker">02 / Registry</p>
-      <h2>Recent case files.</h2>
-    </div>
-    <a class="btn btn--ghost" href="audits/index.html">All audits →</a>
+<section class="band band--light" id="audits">
+  <div class="shell shell--wide">
+    <h2>Recent case files.</h2>
+    <p class="band__lede">Every entry is a generated audit_report.json: commands,
+    verdicts, evidence hashes, uncertainty and limits. Counts are not a score.</p>
+    <div class="promo-grid">{promos}</div>
+    <p class="more"><a class="link" href="audits/index.html">Browse all audits ›</a></p>
   </div>
-  <div class="cases">{latest_cases}</div>
 </section>
 
-<section class="section shell" id="run">
-  <div class="split">
-    <div>
-      <p class="kicker">03 / Run it</p>
-      <h2>Clone, run, verify.</h2>
-      <p>The core is standard-library-only. Optional toolchains (z3, Lean 4)
-      are detected; when they are absent a claim is <span class="mono">INCONCLUSIVE</span>,
-      never a false verdict. Every report can be checked by someone who does
-      not trust its author.</p>
-      <div class="hero__actions">
-        <a class="btn" href="{GITHUB_URL}#quickstart" rel="noopener">Quickstart ↗</a>
-        <a class="btn btn--ghost" href="{root_registry()}">Open the registry</a>
-      </div>
-    </div>
-    <div class="terminal reveal" style="--i:1">
+<section class="band band--dark" id="run">
+  <div class="shell shell--narrow">
+    <h2>Clone, run, verify.</h2>
+    <p class="band__lede">The core is standard-library-only. Optional toolchains
+    (z3, Lean 4) are detected; when they are absent a claim is INCONCLUSIVE,
+    never a false verdict. Every report can be checked by someone who does not
+    trust its author.</p>
+    <div class="terminal reveal">
       <div class="terminal__bar"><i></i><i></i><i></i><span>paperunit — zsh</span></div>
       <pre tabindex="0"><span class="cmt"># claim → check → verdict → report → verify</span>
 <span class="cmd">cd paperunit</span>
@@ -477,19 +526,20 @@ def render_landing(loaded: list[dict[str, Any]]) -> str:
         <button class="copy-btn" type="button" data-copy="{_e(run_commands)}">Copy</button>
       </div>
     </div>
+    <p class="more more--light">
+      <a class="link link--light" href="{GITHUB_URL}#quickstart" rel="noopener">Quickstart ›</a>
+      <a class="link link--light" href="audits/index.html">Open the registry ›</a>
+    </p>
   </div>
 </section>
 
-<section class="section shell" id="principles">
-  <div class="section__head">
-    <div>
-      <p class="kicker">04 / Principles</p>
-      <h2>What this project refuses to be.</h2>
-    </div>
-    <p>These are constraints, not aspirations. The operating manual and the
-    protocol spell out the red lines; the registry applies them.</p>
+<section class="band band--light" id="principles">
+  <div class="shell">
+    <h2>What this project refuses to be.</h2>
+    <p class="band__lede">These are constraints, not aspirations. The operating
+    manual and the protocol spell out the red lines; the registry applies them.</p>
+    <div class="principle-grid">{principles_html}</div>
   </div>
-  <div class="principles">{principles_html}</div>
 </section>
 """
 
@@ -504,7 +554,7 @@ def root_registry() -> str:
 
 
 def render_registry(loaded: list[dict[str, Any]]) -> str:
-    rows = []
+    cards = []
     for item in loaded:
         entry = item["entry"]
         slug = entry["slug"]
@@ -528,37 +578,40 @@ def render_registry(loaded: list[dict[str, Any]]) -> str:
                 claim_text,
             ]
         )
-        rows.append(
+        cards.append(
             f"""
-<article class="audit-row" data-audit
+<article class="audit-card" data-audit
          data-verdicts="{_e(verdicts_present)}"
          data-search="{_e(haystack)}">
-  <div class="audit-row__date">{_e(entry.get('date') or 'undated')}</div>
-  <div>
-    <h2 class="audit-row__title"><a href="{_e(slug)}.html">{_e(entry.get('title') or 'untitled audit')}</a></h2>
-    <p class="audit-row__path">{_e(entry.get('report_path'))}</p>
-  </div>
-  <div class="audit-row__by">audited by<br>{_e(entry.get('audited_by') or 'unknown')}</div>
-  <div class="audit-row__tally">{_tally(counts, compact=True)}</div>
-  <div class="audit-row__sha">sha256<br>{_e(_short(entry.get('report_sha256'), 14))}</div>
+  <a class="audit-card__link" href="{_e(slug)}.html">
+    <p class="audit-card__date">{_e(entry.get('date') or 'undated')}</p>
+    <h2 class="audit-card__title">{_e(entry.get('title') or 'untitled audit')}</h2>
+    <p class="audit-card__by">audited by {_e(entry.get('audited_by') or 'unknown')}</p>
+    <div class="audit-card__chips">{_tally(counts, compact=True)}</div>
+    <div class="audit-card__bar">{_verdict_bars(counts)}<span class="audit-card__claims">{_total_claims(entry)} claims</span></div>
+    <p class="audit-card__path">{_e(entry.get('report_path'))}</p>
+    <span class="audit-card__more">Open dossier ›</span>
+  </a>
 </article>"""
         )
 
-    list_html = "".join(rows)
-    empty = _empty_state() if not rows else ""
-    count = len(rows)
+    list_html = "".join(cards)
+    empty = _empty_state() if not cards else ""
+    count = len(cards)
     return f"""
-<div class="shell">
-  <header class="page-head">
-    <p class="eyebrow">Audit registry · 审计登记处</p>
-    <h1>Case files, not a leaderboard.</h1>
-    <p>Every entry is a generated <span class="mono">audit_report.json</span>:
+<header class="page-head">
+  <div class="shell">
+    <h1>Registry</h1>
+    <p class="page-head__tagline">Case files, not a leaderboard.</p>
+    <p class="page-head__note">Every entry is a generated audit_report.json:
     commands, verdicts, evidence hashes, uncertainty and limits. Entries are
     ordered by date. Read the report before drawing conclusions; counts are not
     a score.</p>
-  </header>
+  </div>
+</header>
 
-  <div class="controls" role="search" aria-label="Filter audits">
+<div class="filterbar">
+  <div class="shell filterbar__inner" role="search" aria-label="Filter audits">
     <label class="search">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
            aria-hidden="true"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4 4"></path></svg>
@@ -574,60 +627,39 @@ def render_registry(loaded: list[dict[str, Any]]) -> str:
     </div>
     <span class="result-count" data-result-count aria-live="polite">{count} audits</span>
   </div>
+</div>
 
-  <section class="audit-list" data-audit-list aria-label="Audit reports">
+<div class="shell">
+  <section class="audit-grid" data-audit-list aria-label="Audit reports">
     {list_html}
   </section>
-  <div data-empty-state class="{'is-hidden' if rows else ''}">{empty}</div>
+  <div data-empty-state class="{'is-hidden' if cards else ''}">{empty}</div>
 
-  <div class="note" style="margin-top:26px">
-    <strong>Demo entries.</strong> Reports under <code>registry/audits/demo-*</code>
-    are self-tests of the pipeline, not published audits. Lean and z3 demos need
-    the optional toolchains; on a machine without them a re-run reports
-    <span class="mono">INCONCLUSIVE</span>/<span class="mono">DRIFT</span>, never a
-    false verdict.
-  </div>
+  <p class="demo-note"><strong>Demo entries.</strong> Reports under
+  <code>registry/audits/demo-*</code> are self-tests of the pipeline, not
+  published audits. Lean and z3 demos need the optional toolchains; on a machine
+  without them a re-run reports INCONCLUSIVE / DRIFT, never a false verdict.</p>
 
-  <div class="prevnext" style="margin-top:34px">
-    <a href="../index.html">← Home</a>
-    <span>{count} reports in this registry</span>
-    <a href="{GITHUB_URL}/blob/main/registry/README.md" rel="noopener">How to add an audit ↗</a>
-  </div>
+  <nav class="page-links" aria-label="Registry links">
+    <a class="link" href="../index.html">‹ Home</a>
+    <a class="link" href="{GITHUB_URL}/blob/main/registry/README.md" rel="noopener">How to add an audit ›</a>
+  </nav>
 </div>
 """
 
 
 # ---------------------------------------------------------------------------
-# dossier page
+# dossier helpers
 # ---------------------------------------------------------------------------
 
 
-def _verdict_summary(counts: dict[str, int]) -> tuple[str, str]:
-    if counts.get("REFUTED", 0) > 0:
-        return ("CONTAINS REFUTED CLAIMS", "stamp")
-    if counts.get("INCONCLUSIVE", 0) > 0:
-        return ("RESOLUTION: PARTIAL", "stamp")
-    if counts.get("SUPPORTED", 0) > 0:
-        return ("CHECKED CLAIMS SUPPORTED", "stamp ok")
-    return ("NO EXECUTABLE CLAIMS", "stamp")
-
-
 def _render_dl(mapping: dict[str, Any]) -> str:
-    if not mapping:
-        return ""
     rows = []
-    for key in sorted(mapping):
-        value = mapping[key]
-        if isinstance(value, (dict, list)):
-            value_html = f"<code>{_e(_json(value))}</code>"
-        elif isinstance(value, float):
-            value_html = f"<code>{value:.6g}</code>"
-        else:
-            rendered = _e(value)
-            if len(rendered) > 1200:
-                rendered = rendered[:1199] + "…"
-            value_html = f"<code>{rendered}</code>"
-        rows.append(f"<dt>{_e(key)}</dt><dd>{value_html}</dd>")
+    for key, value in mapping.items():
+        rendered = _e(value)
+        if len(rendered) > 1200:
+            rendered = rendered[:1199] + "…"
+        rows.append(f"<dt>{_e(key)}</dt><dd>{rendered}</dd>")
     return '<dl class="dl">' + "".join(rows) + "</dl>"
 
 
@@ -635,23 +667,19 @@ def _render_runs(runs: Any) -> str:
     if not isinstance(runs, list) or not runs:
         return ""
     rows = []
-    for index, run in enumerate(runs, start=1):
+    for index, run in enumerate(runs, 1):
         if not isinstance(run, dict):
             continue
         rows.append(
-            "<tr>"
-            f'<td class="num">{index}</td>'
-            f"<td><code>{_e(run.get('cmd', ''))}</code><br>"
-            f"<span class=\"mono muted\">cwd {_e(run.get('cwd', ''))}</span></td>"
-            f'<td class="num">{_e(run.get("exit_code"))}</td>'
-            f'<td class="num">{_e(run.get("duration_s"))}s</td>'
-            f'<td><code>{_e(_short(run.get("evidence_sha256"), 18))}</code></td>'
-            "</tr>"
+            f"<tr><td class=\"num\">{index}</td>"
+            f"<td><code>{_e(_truncate(run.get('command', ''), 160))}</code></td>"
+            f"<td class=\"num\">{_e(run.get('exit_code'))}</td>"
+            f"<td><code>{_e(_short(run.get('evidence_sha256'), 18))}</code></td></tr>"
         )
     return f"""
 <h3>Runs</h3>
 <div class="table-wrap"><table class="evidence">
-<thead><tr><th class="num">#</th><th>command</th><th class="num">exit</th><th class="num">time</th><th>evidence sha256</th></tr></thead>
+<thead><tr><th class="num">#</th><th>command</th><th class="num">exit</th><th>evidence sha256</th></tr></thead>
 <tbody>{''.join(rows)}</tbody>
 </table></div>
 """
@@ -665,10 +693,9 @@ def _render_expectations(items: Any) -> str:
         if not isinstance(item, dict):
             continue
         passed = item.get("passed") is True
-        status = "pass" if passed else "fail"
         rows.append(
             f"<tr><td><code>{_e(item.get('rule'))}</code></td>"
-            f"<td>{status}</td>"
+            f"<td>{'pass' if passed else 'fail'}</td>"
             f"<td>{_e(item.get('detail'))}</td></tr>"
         )
     return f"""
@@ -684,7 +711,7 @@ def _render_values(value: Any) -> str:
     if isinstance(value, list) and value and all(
         isinstance(item, (int, float)) for item in value
     ):
-        return "<h3>Values</h3><p class=\"mono\">" + ", ".join(
+        return '<h3>Values</h3><p class="mono">' + ", ".join(
             _num(item) for item in value
         ) + "</p>"
     return ""
@@ -702,18 +729,6 @@ def _render_evidence(claim: dict[str, Any]) -> str:
     expectations = _render_expectations(evidence.get("expectations"))
     if expectations:
         parts.append(expectations)
-
-    resolution = evidence.get("resolution")
-    if isinstance(resolution, dict) and resolution:
-        parts.append("<h3>Resolution</h3>" + _render_dl(resolution))
-
-    margin = evidence.get("margin_policy")
-    if isinstance(margin, dict) and margin:
-        parts.append("<h3>Margin policy</h3>" + _render_dl(margin))
-
-    if isinstance(uncertainty, dict) and uncertainty:
-        parts.append("<h3>Uncertainty</h3>" + _render_dl(uncertainty))
-
     values = _render_values(evidence.get("values"))
     if values:
         parts.append(values)
@@ -725,7 +740,7 @@ def _render_evidence(claim: dict[str, Any]) -> str:
                 stdout = run["stdout_excerpt"]
                 break
     if isinstance(stdout, str) and stdout.strip():
-        parts.append(f"<h3>stdout excerpt</h3><pre class=\"term\" tabindex=\"0\">{_e(stdout)}</pre>")
+        parts.append(f'<h3>stdout excerpt</h3><pre class="code-block" tabindex="0">{_e(stdout)}</pre>')
 
     rendered = {"runs", "expectations", "resolution", "margin_policy", "values"}
     leftovers = {
@@ -736,10 +751,13 @@ def _render_evidence(claim: dict[str, Any]) -> str:
     if leftovers:
         parts.append("<h3>Other evidence</h3>" + _render_dl(leftovers))
 
+    if isinstance(uncertainty, dict) and uncertainty:
+        parts.append("<h3>Uncertainty</h3>" + _render_dl(uncertainty))
+
     if not parts:
         return '<p class="muted">No evidence recorded for this claim.</p>'
     return (
-        "<details class=\"evidence\"><summary>Evidence &amp; uncertainty</summary>"
+        '<details class="evidence"><summary>Evidence &amp; uncertainty</summary>'
         '<div class="evidence-body">'
         + "".join(parts)
         + "</div></details>"
@@ -747,38 +765,36 @@ def _render_evidence(claim: dict[str, Any]) -> str:
 
 
 def _render_claim(claim: dict[str, Any], index: int) -> str:
-    verdict = str(claim.get("verdict") or "NOT_RUN")
+    if not isinstance(claim, dict):
+        return ""
+    verdict = claim.get("verdict")
     if verdict not in VERDICTS:
         verdict = "NOT_RUN"
-    claim_id = claim.get("id") or f"C{index + 1}"
-    kind = claim.get("kind") or "unknown"
-    preregistered = claim.get("preregistered")
-    pre_tag = (
-        '<span class="claim__kind">preregistered</span>'
-        if preregistered
-        else ""
+    claim_id = claim.get("id") or f"claim-{index + 1}"
+    kind = claim.get("kind") or ""
+    preregistered = " · preregistered" if claim.get("preregistered") else ""
+    text = claim.get("text") or "(no claim text recorded)"
+    reason = claim.get("reason")
+    reason_html = (
+        f'<p class="claim__reason"><b>Reason</b>{_e(reason)}</p>' if reason else ""
     )
-    text = claim.get("text") or ""
-    reason = claim.get("reason") or ""
     return f"""
 <article class="claim claim--{verdict}">
-  <header class="claim__head">
+  <div class="claim__head">
     <span class="claim__id">{_e(claim_id)}</span>
-    <span class="claim__kind">kind · {_e(kind)}</span>
-    {pre_tag}
-    <span class="claim__verdict"><span class="chip chip--{verdict}">{VERDICT_LABEL[verdict]}</span></span>
-  </header>
-  <div class="claim__body">
-    <p class="claim__text">{_e(text)}</p>
-    <p class="claim__reason"><b>Reason</b>{_e(reason)}</p>
-    {_render_evidence(claim)}
+    <span class="claim__kind">{_e(kind)}{preregistered}</span>
+    <span class="chip chip--{verdict}">{VERDICT_LABEL[verdict]}</span>
   </div>
-</article>"""
+  <p class="claim__text">{_e(text)}</p>
+  {reason_html}
+  {_render_evidence(claim)}
+</article>
+"""
 
 
 def _render_author_response(text: str | None) -> str:
     if text:
-        return f'<pre class="term" tabindex="0" style="max-height:420px">{_e(text.strip())}</pre>'
+        return f'<pre class="code-block" tabindex="0">{_e(text.strip())}</pre>'
     return (
         '<p class="muted">No author response is recorded in this registry entry. '
         "Per the audit protocol the corresponding author receives a 14–30 day "
@@ -802,7 +818,6 @@ def render_audit(
     claims = report.get("claims") or []
     limits = report.get("limits") or []
     counts = _counts(entry)
-    stamp_text, stamp_class = _verdict_summary(counts)
     tested = scope.get("tested") or []
     not_tested = scope.get("not_tested") or []
     tool = report.get("tool") or {}
@@ -819,7 +834,7 @@ def render_audit(
         else '<p class="muted">Not declared.</p>'
     )
     limits_html = (
-        "<ul class=\"limits\">" + "".join(f"<li>{_e(item)}</li>" for item in limits) + "</ul>"
+        '<ul class="limits">' + "".join(f"<li>{_e(item)}</li>" for item in limits) + "</ul>"
         if limits
         else '<p class="muted">No explicit limits were recorded.</p>'
     )
@@ -827,8 +842,8 @@ def render_audit(
     if not claims_html:
         claims_html = '<div class="empty-state"><p>This report contains no claims.</p></div>'
 
-    tally_html = "".join(
-        f'<div class="tally-cell"><b>{counts[verdict]}</b>'
+    verdict_stats = "".join(
+        f'<div class="verdict-stat"><b>{counts[verdict]}</b>'
         f'<span>{VERDICT_LABEL[verdict]}</span></div>'
         for verdict in VERDICTS
     )
@@ -848,14 +863,14 @@ def render_audit(
         raw_links_html += f'<li><a href="{_e(raw_md)}">Markdown report</a></li>'
 
     prev_link = (
-        f'<a href="{_e(previous["entry"]["slug"])}.html">← '
-        f'{_e(_truncate(previous["entry"].get("title"), 48))}</a>'
+        f'<a class="link" href="{_e(previous["entry"]["slug"])}.html">‹ '
+        f'{_e(_truncate(previous["entry"].get("title"), 42))}</a>'
         if previous
         else "<span></span>"
     )
     next_link = (
-        f'<a href="{_e(following["entry"]["slug"])}.html">'
-        f'{_e(_truncate(following["entry"].get("title"), 48))} →</a>'
+        f'<a class="link" href="{_e(following["entry"]["slug"])}.html">'
+        f'{_e(_truncate(following["entry"].get("title"), 42))} ›</a>'
         if following
         else "<span></span>"
     )
@@ -873,98 +888,86 @@ def render_audit(
         else ""
     )
 
+    spec_items = [
+        ("Audited by", _e(entry.get("audited_by") or "unknown")),
+        ("Date", _e(entry.get("date") or "undated")),
+        ("Tool", f'<code>{_e(tool.get("name", "paperunit"))} {_e(tool.get("version", ""))}</code>'),
+        ("Environment", f'<code>{_e(env.get("python", ""))} {_e(env.get("platform", ""))}</code>'),
+        ("Paper / artefact", paper_html),
+        ("Commit", f'<code>{_e(target.get("repo_commit") or "—")}</code>'),
+        ("Report path", f'<code>{_e(entry.get("report_path"))}</code>'),
+        ("Report sha256", f'<code>{_e(report_sha)}</code>'),
+    ]
+    spec_html = "".join(
+        f'<div class="spec"><dt>{label}</dt><dd>{value}</dd></div>'
+        for label, value in spec_items
+    )
+
     body = f"""
-<div class="shell">
-  <nav class="breadcrumb" aria-label="Breadcrumb">
-    <a href="../index.html">Home</a><span>/</span>
-    <a href="../audits/index.html">Registry</a><span>/</span>
-    <span aria-current="page">No. {position:03d}</span>
-  </nav>
+<header class="dossier-hero">
+  <div class="shell">
+    <nav class="breadcrumb breadcrumb--dark" aria-label="Breadcrumb">
+      <a href="../index.html">Home</a><span>/</span>
+      <a href="../audits/index.html">Registry</a><span>/</span>
+      <span aria-current="page">No. {position:03d}</span>
+    </nav>
+    <p class="eyebrow eyebrow--light">Audit dossier · No. {position:03d} · {_e(entry.get('date') or 'undated')}</p>
+    <h1>{_e(entry.get('title') or 'untitled audit')}</h1>
+    <p class="dossier-hero__by">audited by {_e(entry.get('audited_by') or 'unknown')}
+      · {len(claims)} claim{'' if len(claims) == 1 else 's'}
+      · {_e(slug)}</p>
+    <div class="verdict-row">{verdict_stats}</div>
+  </div>
+</header>
 
-  <div class="dossier">
-
-    <article>
-      <header class="dossier__head">
-        <p class="eyebrow">Audit dossier · No. {position:03d} · {_e(entry.get('date') or 'undated')}</p>
-        <h1>{_e(entry.get('title') or 'untitled audit')}</h1>
-        <p class="dossier__byline">
-          <span>audited by {_e(entry.get('audited_by') or 'unknown')}</span>
-          <span>{len(claims)} claim{'' if len(claims) == 1 else 's'}</span>
-          <span>{_e(slug)}</span>
-        </p>
-        <div class="tally-block">{tally_html}</div>
-      </header>
-
-      <section class="block">
-        <h2>Scope</h2>
-        <div class="scope-grid">
-          <div class="scope-col"><h3>Tested</h3>{tested_html}</div>
-          <div class="scope-col"><h3>Not tested</h3>{not_tested_html}</div>
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>Claims &amp; evidence</h2>
-        {claims_html}
-      </section>
-
-      <section class="block">
-        <h2>Limits</h2>
-        {limits_html}
-        <div class="note" style="margin-top:14px">
-          <strong>Not a verdict on the paper.</strong> An audit tests only the
-          listed claims on the stated artefact in the stated environment. It does
-          not judge scientific value, author conduct or research integrity.
-        </div>
-      </section>
-
-      <section class="block">
-        <h2>Author response</h2>
-        {_render_author_response(author_response)}
-      </section>
-
-      <section class="block">
-        <h2>Provenance &amp; reproduction</h2>
-        <div class="hash-row">
-          <span class="muted">report_sha256</span>
-          <code>{_e(report_sha)}</code>
-          <button class="copy-btn" type="button" data-copy="{_e(report_sha)}">Copy</button>
-        </div>
-        <p class="muted" style="margin:10px 0 0">The digest covers a stable view
-        of the claim results (volatile timings excluded). Re-run the audit and
-        compare: a changed number is DRIFT; a modified stored report is TAMPERED.</p>
-        {verify_html}
-        <ul class="mono muted" style="margin:14px 0 0;font-size:.74rem">{raw_links_html}</ul>
-      </section>
-
-      <nav class="prevnext" aria-label="Neighbouring audits">
-        {prev_link}
-        <span>← / →</span>
-        {next_link}
-      </nav>
-    </article>
-    <aside class="rail">
-      <div class="meta-card">
-        <h2>Provenance</h2>
-        <dl>
-          <div><dt>Audited by</dt><dd>{_e(entry.get('audited_by') or 'unknown')}</dd></div>
-          <div><dt>Date</dt><dd>{_e(entry.get('date') or 'undated')}</dd></div>
-          <div><dt>Tool</dt><dd><code>{_e(tool.get('name', 'paperunit'))} {_e(tool.get('version', ''))}</code></dd></div>
-          <div><dt>Generated</dt><dd><code>{_e(report.get('generated_at') or '—')}</code></dd></div>
-          <div><dt>Report sha256</dt><dd><code>{_e(report_sha)}</code></dd></div>
-          <div><dt>Report path</dt><dd><code>{_e(entry.get('report_path'))}</code></dd></div>
-        </dl>
+<div class="dossier-body">
+  <div class="shell">
+    <section class="content-section">
+      <h2>Scope</h2>
+      <div class="scope-grid">
+        <div class="scope-col"><h3>Tested</h3>{tested_html}</div>
+        <div class="scope-col"><h3>Not tested</h3>{not_tested_html}</div>
       </div>
-      <div class="meta-card">
-        <h2>Target</h2>
-        <dl>
-          <div><dt>Paper / artefact</dt><dd>{paper_html}</dd></div>
-          <div><dt>Commit</dt><dd><code>{_e(target.get('repo_commit') or '—')}</code></dd></div>
-          <div><dt>Environment</dt><dd><code>{_e(env.get('python', ''))} {_e(env.get('platform', ''))}</code></dd></div>
-        </dl>
+    </section>
+
+    <section class="content-section">
+      <h2>Claims &amp; evidence</h2>
+      {claims_html}
+    </section>
+
+    <section class="content-section">
+      <h2>Limits</h2>
+      {limits_html}
+      <p class="note"><strong>Not a verdict on the paper.</strong> An audit tests
+      only the listed claims on the stated artefact in the stated environment. It
+      does not judge scientific value, author conduct or research integrity.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Author response</h2>
+      {_render_author_response(author_response)}
+    </section>
+
+    <section class="content-section">
+      <h2>Provenance &amp; reproduction</h2>
+      <dl class="spec-grid">{spec_html}</dl>
+      <p class="muted">The digest covers a stable view of the claim results
+      (volatile timings excluded). Re-run the audit and compare: a changed number
+      is DRIFT; a modified stored report is TAMPERED.</p>
+      <div class="hash-row">
+        <span class="muted">report_sha256</span>
+        <code>{_e(report_sha)}</code>
+        <button class="copy-btn" type="button" data-copy="{_e(report_sha)}">Copy</button>
       </div>
-      <span class="{stamp_class}">{stamp_text}</span>
-    </aside>
+      {verify_html}
+      <ul class="raw-links">{raw_links_html}</ul>
+    </section>
+
+    <nav class="dossier-nav" aria-label="Neighbouring audits">
+      {prev_link}
+      <a class="link" href="../audits/index.html">All audits</a>
+      {next_link}
+    </nav>
   </div>
 </div>
 """

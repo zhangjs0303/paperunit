@@ -4,48 +4,6 @@
 (function () {
   "use strict";
 
-  var root = document.documentElement;
-  var THEME_KEY = "paperunit-theme";
-
-  /* ---- theme ------------------------------------------------------- */
-
-  function currentTheme() {
-    return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  }
-
-  function applyTheme(theme) {
-    if (theme === "dark") {
-      root.setAttribute("data-theme", "dark");
-    } else {
-      root.removeAttribute("data-theme");
-    }
-    var toggle = document.querySelector("[data-theme-toggle]");
-    if (toggle) {
-      toggle.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
-      var label = toggle.querySelector("[data-theme-label]");
-      if (label) {
-        label.textContent = theme === "dark" ? "Dark" : "Light";
-      }
-    }
-  }
-
-  var toggle = document.querySelector("[data-theme-toggle]");
-  if (toggle) {
-    toggle.hidden = false;
-    toggle.addEventListener("click", function () {
-      var next = currentTheme() === "dark" ? "light" : "dark";
-      applyTheme(next);
-      try {
-        window.localStorage.setItem(THEME_KEY, next);
-      } catch (err) {
-        /* storage unavailable: the toggle still works for this page */
-      }
-    });
-    applyTheme(currentTheme());
-  } else {
-    applyTheme(currentTheme());
-  }
-
   /* ---- copy-to-clipboard ------------------------------------------- */
 
   document.addEventListener("click", function (event) {

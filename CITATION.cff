@@ -4,7 +4,7 @@ title: "paperunit: executable paper audits"
 abstract: "Bind each paper claim to a check that a third party can re-run; audit reports carry evidence-local verdicts and no aggregate scores."
 type: software
 license: Apache-2.0
-version: 0.3.1
+version: 0.4.0
 date-released: 2026-10-19
 authors:
   - name: "无常"
@@ -17,5 +17,5 @@ keywords:
   - statistics
 identifiers:
   - type: other
-    value: "paperunit-v0.3.1"
+    value: "paperunit-v0.4.0"
     description: "Initial public version of the engine, checkers, registry and operations manual."
