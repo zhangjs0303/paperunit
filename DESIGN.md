@@ -71,7 +71,10 @@ Modules:
 - `report.py` — Markdown rendering (scope, verdicts, evidence, uncertainty, limits).
 - `cli.py` — `run`, `verify`, `validate`, `registry build`, `init`.
 - `checkers/` — `base.py` (frozen interface), `executables.py`, `human.py`, plus optional `statistics.py`, `lean4.py`, `external.py`.
-- `registry.py` — scan `audit_report.json` files, emit static index.
+- `registry.py` — scan `audit_report.json` files, emit the machine-readable index.
+- `site.py` — generate the static UI (landing, registry browser, one dossier page
+  per audit) and copy raw reports/responses; `site_assets/` holds the stylesheet,
+  the progressive-enhancement script and self-hosted fonts.
 - `docs/` — protocol, ethics, checker authoring.
 
 ## 4. Claim taxonomy and trust hierarchy

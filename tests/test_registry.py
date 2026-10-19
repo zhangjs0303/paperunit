@@ -110,6 +110,8 @@ class RegistryBuildTest(unittest.TestCase):
 
         self.assertTrue((self.out / "index.json").is_file())
         self.assertTrue((self.out / "index.html").is_file())
+        self.assertTrue((self.out / "audits" / "index.html").is_file())
+        self.assertTrue((self.out / "assets" / "style.css").is_file())
         self.assertEqual(self._read_index_json(), index)
         self.assertIn("尚无审计报告", self._read_index_html())
 
@@ -160,8 +162,30 @@ class RegistryBuildTest(unittest.TestCase):
         self.assertIn("INCONCLUSIVE", page)
         self.assertIn("NOT_RUN", page)
         self.assertIn("paper_b/audit_report.json", page)
-        # Two rows plus the header row.
-        self.assertEqual(page.count("<tr>"), 3)
+        # Two audit cards on the landing page.
+        self.assertEqual(page.count('class="case reveal"'), 2)
+
+        registry_page = (self.out / "audits" / "index.html").read_text(encoding="utf-8")
+        self.assertEqual(registry_page.count('class="audit-row"'), 2)
+        self.assertIn(full["target"]["title"], registry_page)
+
+        detail = (self.out / "audits" / "paper_a.html").read_text(encoding="utf-8")
+        self.assertIn(full["target"]["title"], detail)
+        self.assertIn("test accuracy 0.923", detail)
+        self.assertIn("observed 0.918", detail)
+        self.assertTrue((self.out / "audits" / "paper_a" / "report.json").is_file())
+
+    def test_site_assets_are_copied(self) -> None:
+        _write_report(
+            self.audits,
+            "one/audit_report.json",
+            {"schema": "paperunit/report/v1", "target": {"title": "Asset test", "date": "2026-10-20"}},
+        )
+        self._build()
+        assets = self.out / "assets"
+        self.assertTrue((assets / "style.css").is_file())
+        self.assertTrue((assets / "app.js").is_file())
+        self.assertTrue((assets / "fonts" / "newsreader-normal-400-700.woff2").is_file())
 
     def test_html_does_not_embed_scripts(self) -> None:
         _write_report(
@@ -181,10 +205,11 @@ class RegistryBuildTest(unittest.TestCase):
         self._build()
         page = self._read_index_html()
 
+        # Report data is escaped; the only scripts are the site's own assets.
         self.assertNotIn("<script>alert", page)
-        self.assertNotIn("<script src", page)
         self.assertIn("&lt;script&gt;", page)
         self.assertIn("a &amp; b", page)
+        self.assertIn('src="assets/app.js"', page)
 
     def test_date_sort_is_descending_and_undated_last(self) -> None:
         _write_report(
@@ -293,12 +318,16 @@ class RegistryBuildTest(unittest.TestCase):
         first = self._build()
         json_first = (self.out / "index.json").read_bytes()
         html_first = (self.out / "index.html").read_bytes()
+        registry_first = (self.out / "audits" / "index.html").read_bytes()
+        detail_first = (self.out / "audits" / "one.html").read_bytes()
 
         second = self._build()
 
         self.assertEqual(first, second)
         self.assertEqual((self.out / "index.json").read_bytes(), json_first)
         self.assertEqual((self.out / "index.html").read_bytes(), html_first)
+        self.assertEqual((self.out / "audits" / "index.html").read_bytes(), registry_first)
+        self.assertEqual((self.out / "audits" / "one.html").read_bytes(), detail_first)
 
     def test_out_dir_inside_audits_dir_is_not_rescanned(self) -> None:
         _write_report(

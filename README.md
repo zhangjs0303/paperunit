@@ -35,9 +35,16 @@ python3 -m paperunit run --audit examples/redteam/audit.json --out out/redteam
 # tests
 python3 -m unittest discover -s tests -v
 
-# static registry (scan for audit_report.json files, write index.html + index.json)
+# static registry + site (scan for audit_report.json files, write the full UI)
 python3 -m paperunit registry build --audits-dir registry/audits --out registry/site
 ```
+
+`registry build` also generates a small static site: a landing page, a searchable
+registry and one dossier page per audit (commands, evidence, uncertainty, limits,
+author-response slot). The site is plain HTML/CSS plus a ~100-line progressive
+enhancement script; fonts are self-hosted; there are no external requests and no
+trackers. Open `registry/site/index.html` directly or let CI deploy it to GitHub
+Pages.
 
 `run` writes `audit_report.json` (machine-readable, digest-bearing) and
 `report.md` (human-readable: scope, verdicts, evidence, uncertainty, limits).
@@ -155,10 +162,11 @@ and was not formalised (integer weights, 3 neurons, no Mathlib, no exp/log step)
 
 ```
 paperunit/
-  paperunit/            # package: cli, engine, schema, report, registry, checkers/
-  examples/            # toy_paper, redteam, stats_claim, causal_mask, lean_demo, z3_demo
+  paperunit/            # package: cli, engine, schema, report, registry, site, checkers/
+    site_assets/       # stylesheet, tiny JS enhancement, self-hosted fonts
+  examples/            # toy/redteam/stats/causal/lean/z3 demos + a published-paper formalisation
   tests/               # stdlib unittest
-  registry/            # static registry: audits/ + generated site/
+  registry/            # audit reports + generated site (landing, browser, dossiers)
   docs/                # protocol.md, ethics.md, checker-authoring.md
   OPS.md               # long-term operations: roles, cadence, governance, funding, risks
   DESIGN.md            # architecture and trust model

@@ -29,9 +29,11 @@ python3 -m paperunit registry build --audits-dir registry/audits --out registry/
 ```
 
 The builder is a pure function of the files in this directory (stdlib only,
-deterministic). CI rebuilds it from `registry/audits/` and asserts that
-`index.json` / `index.html` are produced; the generated `registry/site/` is not
-committed (see `.gitignore`).
+deterministic). It writes `index.json` plus a full static site: `index.html`
+(landing), `audits/index.html` (searchable registry), `audits/<slug>.html`
+(dossier pages), raw report copies under `audits/<slug>/`, and self-hosted
+assets. CI rebuilds it from `registry/audits/` and asserts the output exists;
+the generated `registry/site/` is not committed (see `.gitignore`).
 
 Publication checklist before adding a directory here:
 

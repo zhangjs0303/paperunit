@@ -1,10 +1,9 @@
 """Static registry builder for paperunit audit reports.
 
 Scans an ``audits/`` tree for ``audit_report.json`` files (the artefact written
-by the audit engine) and writes two plain static files:
-
-* ``index.json`` - machine-readable index of the reports;
-* ``index.html`` - a single static HTML page, no JavaScript, no CDN, no backend.
+by the audit engine), writes ``index.json`` (machine-readable index) and then
+delegates the HTML site to :mod:`paperunit.site` (landing page, registry browser
+and one dossier page per audit).
 
 Design constraints:
 
@@ -24,12 +23,13 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import html
 import json
-import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
+
+from .site import build_site
 
 REGISTRY_SCHEMA = "paperunit/registry/v1"
 REPORT_FILENAME = "audit_report.json"
@@ -45,6 +45,7 @@ UNKNOWN_AUTHOR = "unknown"
 # ---------------------------------------------------------------------------
 # Tolerant field readers
 # ---------------------------------------------------------------------------
+
 
 def _as_dict(value: Any) -> dict[str, Any]:
     """Return ``value`` if it is a dict, else an empty dict."""
@@ -93,10 +94,25 @@ def _count_verdicts(report: dict[str, Any]) -> dict[str, int]:
     return counts
 
 
+def _slug_for(relative: str, used: set[str]) -> str:
+    """Deterministic URL slug for one report path."""
+    parent = relative.rsplit("/", 1)[0] if "/" in relative else ""
+    base = parent.strip("/") or "audit"
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "-", base).strip("-._").lower() or "audit"
+    candidate = slug
+    suffix = 2
+    while candidate in used:
+        candidate = f"{slug}-{suffix}"
+        suffix += 1
+    used.add(candidate)
+    return candidate
+
+
 def _entry_from_report(
     report: dict[str, Any],
     report_path: str,
     file_sha256: str,
+    slug: str,
 ) -> dict[str, Any]:
     """Build one index entry from a parsed report.
 
@@ -115,12 +131,14 @@ def _entry_from_report(
         "verdict_counts": _count_verdicts(report),
         "report_sha256": report_sha256,
         "report_path": report_path,
+        "slug": slug,
     }
 
 
 # ---------------------------------------------------------------------------
 # Collection and ordering
 # ---------------------------------------------------------------------------
+
 
 def _find_report_files(audits_dir: Path, out_dir: Path) -> list[Path]:
     """Recursively find report files, sorted; skip the registry output tree."""
@@ -180,166 +198,19 @@ def _load_report(path: Path) -> tuple[dict[str, Any], str]:
 
 
 # ---------------------------------------------------------------------------
-# Rendering
+# Rendering (index.json only; HTML lives in paperunit.site)
 # ---------------------------------------------------------------------------
+
 
 def render_index_json(index: dict[str, Any]) -> str:
     """Serialise the index as deterministic, human-readable JSON."""
     return json.dumps(index, ensure_ascii=False, indent=2) + "\n"
 
 
-def _relative_href(audits_dir: Path, out_dir: Path, report_path: str) -> str:
-    """Best-effort relative link from the generated page to the report file."""
-    target = (audits_dir / report_path).resolve()
-    try:
-        base = out_dir.resolve()
-        relative = os.path.relpath(target, base)
-    except (OSError, ValueError):  # pragma: no cover - different drives etc.
-        return report_path
-    return Path(relative).as_posix()
-
-
-def _short_sha256(value: str, length: int = 12) -> str:
-    if not value:
-        return ""
-    return value[:length] + ("..." if len(value) > length else "")
-
-
-def _render_table_row(entry: dict[str, Any], href: str) -> str:
-    counts = entry["verdict_counts"]
-    title = html.escape(entry["title"])
-    audited_by = html.escape(entry["audited_by"])
-    date = html.escape(entry["date"]) if entry["date"] else "未标注"
-    sha256 = entry["report_sha256"]
-    sha_title = html.escape(sha256)
-    sha_short = html.escape(_short_sha256(sha256))
-    href_attr = html.escape(href, quote=True)
-    path_text = html.escape(entry["report_path"])
-    return (
-        "      <tr>\n"
-        f"        <td class=\"date\">{date}</td>\n"
-        f"        <td class=\"title\">{title}</td>\n"
-        f"        <td>{audited_by}</td>\n"
-        f"        <td class=\"num s\">{counts['SUPPORTED']}</td>\n"
-        f"        <td class=\"num r\">{counts['REFUTED']}</td>\n"
-        f"        <td class=\"num i\">{counts['INCONCLUSIVE']}</td>\n"
-        f"        <td class=\"num n\">{counts['NOT_RUN']}</td>\n"
-        "        <td class=\"report\">"
-        f"<a href=\"{href_attr}\"><code>{path_text}</code></a>"
-        f"<br><code class=\"sha\" title=\"{sha_title}\">{sha_short}</code></td>\n"
-        "      </tr>\n"
-    )
-
-
-_HTML_HEAD = """<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>paperunit 审计登记处</title>
-  <style>
-    :root { color-scheme: light dark; }
-    body { font-family: system-ui, -apple-system, "Segoe UI", "Noto Sans CJK SC", sans-serif;
-           max-width: 1100px; margin: 2rem auto; padding: 0 1rem; line-height: 1.55; }
-    h1 { font-size: 1.5rem; margin-bottom: 0.25rem; }
-    .lede { color: #666; margin-top: 0; }
-    .notice { border-left: 4px solid #999; padding: 0.6rem 1rem; margin: 1.2rem 0;
-              background: rgba(127,127,127,0.08); }
-    .notice p { margin: 0.35rem 0; }
-    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
-    th, td { border: 1px solid rgba(127,127,127,0.35); padding: 0.4rem 0.55rem;
-             text-align: left; vertical-align: top; }
-    th { background: rgba(127,127,127,0.12); font-weight: 600; }
-    td.num { text-align: right; font-variant-numeric: tabular-nums; }
-    td.s { color: #1a7f37; }
-    td.r { color: #b42318; }
-    td.i { color: #8a5a00; }
-    td.n { color: #666; }
-    td.date { white-space: nowrap; }
-    code { font-size: 0.85em; }
-    .sha { color: #666; }
-    .legend dt { font-weight: 600; }
-    .legend dd { margin: 0 0 0.35rem 1.2rem; }
-    footer { margin-top: 2rem; color: #666; font-size: 0.85rem; }
-  </style>
-</head>
-<body>
-  <h1>paperunit 审计登记处</h1>
-  <p class="lede">可执行论文审计报告的静态索引。没有分数，没有排名。</p>
-
-  <div class="notice">
-    <p><strong>声明：</strong>本页只登记针对论文中具体 claim 的可执行检查结果。
-    每条 verdict 都绑定一个 commit、一组命令和一次运行环境；它不是对论文科学价值、
-    作者能力或研究诚信的评价。</p>
-    <p>REFUTED 表示在给定 commit 与环境下预注册的检查未通过，不表示作者存在学术不端；
-    遇到分歧时以报告中的证据与作者回应为准。报告可被第三方重新运行。</p>
-  </div>
-
-  <h2>图例</h2>
-  <dl class="legend">
-    <dt>SUPPORTED</dt><dd>检查已运行，且全部预注册期望均满足。</dd>
-    <dt>REFUTED</dt><dd>检查已运行，且至少一项预注册期望未满足。</dd>
-    <dt>INCONCLUSIVE</dt><dd>检查无法判定（工具链缺失、超时、统计功效不足、形式化未通过等）。</dd>
-    <dt>NOT_RUN</dt><dd>该 claim 没有可执行检查（例如仅有人审记录）。</dd>
-  </dl>
-"""
-
-_HTML_FOOT = """  <footer>
-    <p>本页由 <code>paperunit.registry.build_registry</code> 从 <code>audit_report.json</code>
-    静态生成；无 JavaScript、无后端、无外部依赖。</p>
-  </footer>
-</body>
-</html>
-"""
-
-
-def render_index_html(
-    index: dict[str, Any],
-    audits_dir: Path,
-    out_dir: Path,
-) -> str:
-    """Render the static HTML index (no JavaScript, no external resources)."""
-    entries = index["audits"]
-    parts = [_HTML_HEAD]
-    if not entries:
-        parts.append(
-            "\n  <h2>审计报告</h2>\n"
-            "  <p>尚无审计报告。把包含 <code>audit_report.json</code> 的目录放进 "
-            "<code>audits/</code>，然后重建本页。</p>\n"
-        )
-    else:
-        parts.append(
-            f"\n  <h2>审计报告（{index['count']} 份）</h2>\n"
-            "  <table>\n"
-            "    <thead>\n"
-            "      <tr>\n"
-            "        <th>日期</th>\n"
-            "        <th>论文 / 目标</th>\n"
-            "        <th>审计者</th>\n"
-            "        <th class=\"num\">SUPPORTED</th>\n"
-            "        <th class=\"num\">REFUTED</th>\n"
-            "        <th class=\"num\">INCONCLUSIVE</th>\n"
-            "        <th class=\"num\">NOT_RUN</th>\n"
-            "        <th>报告</th>\n"
-            "      </tr>\n"
-            "    </thead>\n"
-            "    <tbody>\n"
-        )
-        for entry in entries:
-            href = _relative_href(audits_dir, out_dir, entry["report_path"])
-            parts.append(_render_table_row(entry, href))
-        parts.append("    </tbody>\n  </table>\n")
-        parts.append(
-            "\n  <p class=\"lede\">按日期倒序排列；日期缺失的报告排在末尾。<br>"
-            "sha256 前缀为报告文件的内容哈希；点开报告可复核完整证据。</p>\n"
-        )
-    parts.append(_HTML_FOOT)
-    return "".join(parts)
-
-
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
 
 def build_registry(audits_dir: Path | str, out_dir: Path | str) -> dict[str, Any]:
     """Build the static registry for one audit tree.
@@ -349,8 +220,9 @@ def build_registry(audits_dir: Path | str, out_dir: Path | str) -> dict[str, Any
     audits_dir:
         Directory scanned recursively for ``audit_report.json`` files.
     out_dir:
-        Directory that receives ``index.json`` and ``index.html`` (created if
-        missing).  A tree inside ``audits_dir`` is skipped during the scan.
+        Directory that receives ``index.json``, the generated site and its
+        assets (created if missing).  A tree inside ``audits_dir`` is skipped
+        during the scan.
 
     Returns
     -------
@@ -361,10 +233,11 @@ def build_registry(audits_dir: Path | str, out_dir: Path | str) -> dict[str, Any
              "count": 2,
              "audits": [{"title": ..., "audited_by": ..., "date": ...,
                          "verdict_counts": {...}, "report_sha256": ...,
-                         "report_path": "relative/path/audit_report.json"},
+                         "report_path": "relative/path/audit_report.json",
+                         "slug": "..."},
                         ...],
              "warnings": [{"report_path": ..., "error": ...}]  # optional
-            }
+             }
 
     Deterministic: the same inputs and output directory produce byte-identical
     files on every run.
@@ -375,7 +248,9 @@ def build_registry(audits_dir: Path | str, out_dir: Path | str) -> dict[str, Any
         raise FileNotFoundError(f"audits directory not found: {audits_path}")
 
     entries: list[dict[str, Any]] = []
+    loaded: list[tuple[str, dict[str, Any], dict[str, Any]]] = []
     warnings: list[dict[str, str]] = []
+    used_slugs: set[str] = set()
     for report_file in _find_report_files(audits_path, out_path):
         relative = report_file.relative_to(audits_path).as_posix()
         try:
@@ -383,7 +258,10 @@ def build_registry(audits_dir: Path | str, out_dir: Path | str) -> dict[str, Any
         except (OSError, ValueError) as exc:
             warnings.append({"report_path": relative, "error": str(exc)})
             continue
-        entries.append(_entry_from_report(report, relative, file_sha256))
+        slug = _slug_for(relative, used_slugs)
+        entry = _entry_from_report(report, relative, file_sha256, slug)
+        entries.append(entry)
+        loaded.append((relative, report, entry))
 
     index: dict[str, Any] = {
         "schema": REGISTRY_SCHEMA,
@@ -396,9 +274,12 @@ def build_registry(audits_dir: Path | str, out_dir: Path | str) -> dict[str, Any
 
     out_path.mkdir(parents=True, exist_ok=True)
     index_json = render_index_json(index)
-    index_html = render_index_html(index, audits_path, out_path)
     _write_text(out_path / "index.json", index_json)
-    _write_text(out_path / "index.html", index_html)
+
+    ordered = _sort_entries(entries)
+    order_key = {entry["report_path"]: position for position, entry in enumerate(ordered)}
+    loaded.sort(key=lambda item: order_key[item[2]["report_path"]])
+    build_site(index, loaded, out_path, audits_path)
     return index
 
 
@@ -422,7 +303,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--out",
         default="registry/site",
-        help="output directory for index.json and index.html (default: registry/site)",
+        help="output directory for index.json and the site (default: registry/site)",
     )
     args = parser.parse_args(argv)
 

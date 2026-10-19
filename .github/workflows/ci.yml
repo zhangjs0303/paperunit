@@ -62,4 +62,7 @@ jobs:
         run: |
           test -f registry/site/index.json
           test -f registry/site/index.html
+          test -f registry/site/audits/index.html
+          test -f registry/site/assets/style.css
+          test -f registry/site/assets/app.js
           python -m json.tool registry/site/index.json > /dev/null
