@@ -42,10 +42,11 @@ python3 -m paperunit registry build --audits-dir registry/audits --out registry/
 
 `registry build` also generates a small static site: a landing page, a searchable
 registry and one dossier page per audit (commands, evidence, uncertainty, limits,
-author-response slot). The site is plain HTML/CSS plus a ~100-line progressive
-enhancement script; fonts are self-hosted; there are no external requests and no
-trackers. Open `registry/site/index.html` directly or let CI deploy it to GitHub
-Pages.
+author-response slot). The UI is Liquid Glass-inspired: frosted translucency,
+specular edges and floating layers over a slow aurora, in light and dark mode.
+It is plain HTML/CSS with a small progressive-enhancement script, uses the system
+font stack, and makes no external requests. Open `registry/site/index.html`
+directly or let CI deploy it to GitHub Pages.
 
 `run` writes `audit_report.json` (machine-readable, digest-bearing) and
 `report.md` (human-readable: scope, verdicts, evidence, uncertainty, limits).
@@ -164,7 +165,7 @@ and was not formalised (integer weights, 3 neurons, no Mathlib, no exp/log step)
 ```
 paperunit/
   paperunit/            # package: cli, engine, schema, report, registry, site, checkers/
-    site_assets/       # stylesheet, tiny JS enhancement, self-hosted fonts
+    site_assets/       # Liquid Glass stylesheet + tiny JS enhancement
   examples/            # toy/redteam/stats/causal/lean/z3 demos + a published-paper formalisation
   tests/               # stdlib unittest
   registry/            # audit reports + generated site (landing, browser, dossiers)

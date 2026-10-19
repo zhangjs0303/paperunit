@@ -4,7 +4,7 @@ The site is a small, dependency-free "evidence ledger": a landing page, an
 auditable registry and one dossier page per audit report.  Everything is
 generated from ``audit_report.json`` files with the standard library; the only
 assets are a stylesheet, a small progressive-enhancement script and a few
-self-hosted font files.
+the Liquid Glass stylesheet and tiny enhancement script.
 
 Design constraints:
 
@@ -145,9 +145,14 @@ try {{
 </head>
 <body class="{_e(body_class)}">
 <a class="skip-link" href="#main">Skip to content</a>
+<div class="ambient" aria-hidden="true">
+  <span class="orb orb--1"></span>
+  <span class="orb orb--2"></span>
+  <span class="orb orb--3"></span>
+</div>
 <header class="topbar">
   <div class="shell topbar__inner">
-    <a class="brand" href="{root}index.html" aria-label="paperunit home">
+    <a class="brand" href="{root}index.html">
       <span class="brand__mark" aria-hidden="true">P</span>
       <span class="brand__word"><b>paperunit</b><span>executable paper audits</span></span>
     </a>
@@ -155,8 +160,8 @@ try {{
       {nav_html}
       <a href="{GITHUB_URL}" rel="noopener">GitHub ↗</a>
       <button class="theme-toggle" type="button" data-theme-toggle hidden
-              aria-label="Toggle dark mode" aria-pressed="false">
-        Mode <span data-theme-label>Dark</span>
+              aria-pressed="false">
+        <span class="sr-only">Switch theme:</span> <span data-theme-label>Dark</span>
       </button>
     </nav>
   </div>
@@ -461,7 +466,7 @@ def render_landing(loaded: list[dict[str, Any]]) -> str:
     </div>
     <div class="terminal reveal" style="--i:1">
       <div class="terminal__bar"><i></i><i></i><i></i><span>paperunit — zsh</span></div>
-      <pre><span class="cmt"># claim → check → verdict → report → verify</span>
+      <pre tabindex="0"><span class="cmt"># claim → check → verdict → report → verify</span>
 <span class="cmd">cd paperunit</span>
 <span class="cmd">python3 -m paperunit run</span>    <span class="prm">--audit</span> examples/lean_paper_ncc/audit.json <span class="prm">--out</span> out/lean
 <span class="cmd">python3 -m paperunit verify</span> <span class="prm">--audit</span> examples/lean_paper_ncc/audit.json <span class="prm">--report</span> out/lean/audit_report.json
@@ -720,7 +725,7 @@ def _render_evidence(claim: dict[str, Any]) -> str:
                 stdout = run["stdout_excerpt"]
                 break
     if isinstance(stdout, str) and stdout.strip():
-        parts.append(f"<h3>stdout excerpt</h3><pre class=\"term\">{_e(stdout)}</pre>")
+        parts.append(f"<h3>stdout excerpt</h3><pre class=\"term\" tabindex=\"0\">{_e(stdout)}</pre>")
 
     rendered = {"runs", "expectations", "resolution", "margin_policy", "values"}
     leftovers = {
@@ -733,7 +738,12 @@ def _render_evidence(claim: dict[str, Any]) -> str:
 
     if not parts:
         return '<p class="muted">No evidence recorded for this claim.</p>'
-    return "<details class=\"evidence\"><summary>Evidence &amp; uncertainty</summary>" + "".join(parts) + "</details>"
+    return (
+        "<details class=\"evidence\"><summary>Evidence &amp; uncertainty</summary>"
+        '<div class="evidence-body">'
+        + "".join(parts)
+        + "</div></details>"
+    )
 
 
 def _render_claim(claim: dict[str, Any], index: int) -> str:
@@ -768,7 +778,7 @@ def _render_claim(claim: dict[str, Any], index: int) -> str:
 
 def _render_author_response(text: str | None) -> str:
     if text:
-        return f'<pre class="term" style="max-height:420px">{_e(text.strip())}</pre>'
+        return f'<pre class="term" tabindex="0" style="max-height:420px">{_e(text.strip())}</pre>'
     return (
         '<p class="muted">No author response is recorded in this registry entry. '
         "Per the audit protocol the corresponding author receives a 14–30 day "

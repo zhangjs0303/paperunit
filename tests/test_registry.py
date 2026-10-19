@@ -185,7 +185,6 @@ class RegistryBuildTest(unittest.TestCase):
         assets = self.out / "assets"
         self.assertTrue((assets / "style.css").is_file())
         self.assertTrue((assets / "app.js").is_file())
-        self.assertTrue((assets / "fonts" / "newsreader-normal-400-700.woff2").is_file())
 
     def test_html_does_not_embed_scripts(self) -> None:
         _write_report(

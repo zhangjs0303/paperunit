@@ -5,6 +5,6 @@ reports evidence-local verdicts (SUPPORTED / REFUTED / INCONCLUSIVE / NOT_RUN)
 and never an aggregate score or ranking.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 VERDICTS = ("SUPPORTED", "REFUTED", "INCONCLUSIVE", "NOT_RUN")
