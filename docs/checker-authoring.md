@@ -235,3 +235,14 @@ ctx = CheckContext(
 [ ] reason 与措辞通过 ethics.md 自检
 [ ] 已报告 maintainer 注册 kind（不自行改 checkers/__init__.py 或 base.py）
 ```
+
+## Evidence comparison mode
+
+Set ``evidence["comparison_mode"] = "verdict_only"`` when only the verdict (for
+example, the exit status) is decisive and the rest of stdout is incidental
+(unittest timings are the canonical case). The engine then excludes volatile
+run fields (stdout/stderr hashes, excerpts, durations) from the report
+fingerprint, so honest re-runs stay ``REPRODUCIBLE``. Numeric and stdout
+checkers should keep the default strict mode: a changed number is a real
+``evidence_changed`` difference. An audit file may override the mode per claim
+with a top-level ``evidence_comparison`` field.

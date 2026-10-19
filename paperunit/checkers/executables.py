@@ -100,10 +100,12 @@ def _finish(
     results: list[dict[str, Any]],
     hard_error: str | None,
     expect: dict[str, Any],
+    comparison_mode: str = "stdout",
 ) -> Outcome:
     evidence: dict[str, Any] = {
         "runs": [run.summary()],
         "expectations": results,
+        "comparison_mode": comparison_mode,
     }
     if run.timed_out:
         return Outcome(
@@ -164,4 +166,6 @@ class ExitChecker:
         run = _execute(ctx, check)
         expect = check.get("expect") or {}
         results, hard_error = _evaluate(expect, run)
-        return _finish(run, results, hard_error, expect)
+        # Only the exit status is judged; unittest timings and other stdout
+        # differences must not make an honest re-run look like DRIFT.
+        return _finish(run, results, hard_error, expect, comparison_mode="verdict_only")

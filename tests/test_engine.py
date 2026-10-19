@@ -175,6 +175,55 @@ class EngineTests(unittest.TestCase):
             report, _ = run_audit(audit, tmp_path / "out", runner=timed_out)
             self.assertEqual(report["claims"][0]["verdict"], "INCONCLUSIVE")
 
+    def test_exit_claim_reproducible_despite_unittest_timings(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            audit = _audit_file(
+                tmp_path,
+                claims=[
+                    {
+                        "id": "E1",
+                        "text": "the test suite exits 0",
+                        "kind": "exit",
+                        "check": {"cmd": "true", "expect": {"exit_code": 0}},
+                    }
+                ],
+            )
+
+            def runner_with(stdout: str, duration: float):
+                def runner(cmd: str, cwd: Path, timeout_s: float) -> RunResult:
+                    return RunResult(
+                        cmd, str(cwd), timeout_s, 0, False, duration, stdout, ""
+                    )
+
+                return runner
+
+            _, paths = run_audit(
+                audit,
+                tmp_path / "out",
+                runner=runner_with("Ran 10 tests in 14.9s\nOK\n", 14.9),
+            )
+            status, details = verify_audit(
+                audit,
+                paths["json"],
+                runner=runner_with("Ran 10 tests in 5.1s\nOK\n", 5.1),
+            )
+            self.assertEqual(status, "REPRODUCIBLE")
+            self.assertEqual(details["differences"], [])
+
+    def test_numeric_claim_still_strict_on_stdout(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            audit = _audit_file(tmp_path)
+            _, paths = run_audit(audit, tmp_path / "out", runner=_fake_runner(0.5))
+            # Same verdict (both inside the 0.01 tolerance) but different output:
+            # a numeric check's evidence is the number, so this is DRIFT.
+            status, details = verify_audit(
+                audit, paths["json"], runner=_fake_runner(0.5001)
+            )
+            self.assertEqual(status, "DRIFT")
+            self.assertEqual(details["differences"][0]["change"], "evidence_changed")
+
     def test_report_contains_no_aggregate_score_field(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             report, _ = run_audit(

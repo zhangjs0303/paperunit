@@ -67,8 +67,21 @@ def stable_view(obj: Any) -> Any:
     return obj
 
 
+# Run-level fields that are not decisive evidence when a checker only judges the
+# exit status: unittest timings and harmless stdout differences would otherwise
+# make honest re-runs look like DRIFT.
+_VOLATILE_RUN_FIELDS = {
+    "stdout_sha256",
+    "stderr_sha256",
+    "evidence_sha256",
+    "stdout_excerpt",
+    "stderr_excerpt",
+    "duration_s",
+}
+
+
 def claim_record(claim: dict[str, Any], outcome: Outcome) -> dict[str, Any]:
-    return {
+    record = {
         "id": claim["id"],
         "kind": claim["kind"],
         "text": claim.get("text", ""),
@@ -78,10 +91,35 @@ def claim_record(claim: dict[str, Any], outcome: Outcome) -> dict[str, Any]:
         "evidence": outcome.evidence,
         "uncertainty": outcome.uncertainty,
     }
+    if claim.get("evidence_comparison"):
+        record["evidence_comparison"] = claim["evidence_comparison"]
+    return record
+
+
+def _strip_volatile_evidence(record: dict[str, Any]) -> dict[str, Any]:
+    """Drop non-decisive run output when a claim is compared by verdict only."""
+    evidence = record.get("evidence") or {}
+    mode = record.get("evidence_comparison") or evidence.get("comparison_mode")
+    if mode != "verdict_only":
+        return record
+    cleaned_evidence = dict(evidence)
+    runs = cleaned_evidence.get("runs")
+    if isinstance(runs, list):
+        cleaned_evidence["runs"] = [
+            {k: v for k, v in run.items() if k not in _VOLATILE_RUN_FIELDS}
+            if isinstance(run, dict)
+            else run
+            for run in runs
+        ]
+    cleaned_evidence.pop("stdout_excerpt", None)
+    cleaned_evidence.pop("stdout", None)
+    cleaned = dict(record)
+    cleaned["evidence"] = cleaned_evidence
+    return cleaned
 
 
 def claim_fingerprint(record: dict[str, Any]) -> str:
-    return sha256_text(canonical_json(stable_view(record)))
+    return sha256_text(canonical_json(stable_view(_strip_volatile_evidence(record))))
 
 
 def report_digest(records: list[dict[str, Any]]) -> str:

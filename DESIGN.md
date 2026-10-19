@@ -144,6 +144,17 @@ is computed over a **stable view** of the claim records: volatile fields
 
 This makes "the report is re-runnable" a property of the artefact, not a promise.
 
+### 5.1 Evidence stability
+
+Not every byte of stdout is decisive. A ``kind: exit`` claim judges the exit
+status; unittest timings and incidental output differ between honest runs and
+must not produce DRIFT. Such checkers mark their evidence with
+``comparison_mode: "verdict_only"``, and the fingerprint drops the volatile run
+fields (stdout/stderr hashes, excerpts, durations) while keeping exit status and
+timeout. Numeric and stdout checkers stay strict: a changed number is a real
+``evidence_changed`` difference. An audit file may override the mode per claim
+with ``evidence_comparison``.
+
 ## 6. Schema and evolution
 
 - `paperunit/v1` is the current audit schema; `paperaudit/v0` is migrated
