@@ -1,0 +1,8 @@
+// v0.2.1 最少真实工作打满上界：1 轮 6 个事件，R_trial=6.000/6.000
+// artifact = python3 -c 'print(2+2)'，hash 自报为 '0'，两次 reject 由同一人给出
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c1","w":1.0,"kind":"rerun","test":"运行 python3 -c 'print(2+2)'，stdout 必须是 4，且与 artifact 声明的 hash 一致"}]}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(2+2)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v1r1","op":"verify","actor":"B","target":"e1","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":1,"id":"v1r2","op":"verify","actor":"B","target":"e1","decision":"reject","evidence":"同一个人再次复跑仍是 5，两次记录都计入独立 reject 数。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"改口：复跑得到 4，接受（与上两条自相矛盾）。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m1","op":"merge","actor":"B","target":"e1","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}

@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+out/
+.venv/
+.toolchains/
+*.egg-info/
+build/
+dist/
+.DS_Store
+
+# Generated registry site (rebuilt by CI)
+registry/site/
+
+# Lean/lake build artefacts
+.lake/
+lake-manifest.json

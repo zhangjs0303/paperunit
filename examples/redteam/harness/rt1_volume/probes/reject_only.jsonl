@@ -1,0 +1,27 @@
+// 12 rejects, zero verified events
+{"round": 1, "id": "p", "op": "propose", "actor": "A", "task": "Q", "acceptance": "12345678"}
+{"round": 1, "id": "e00", "op": "produce", "actor": "A", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e00", "op": "verify", "actor": "B", "target": "e00", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e01", "op": "produce", "actor": "B", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e01", "op": "verify", "actor": "C", "target": "e01", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e02", "op": "produce", "actor": "C", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e02", "op": "verify", "actor": "D", "target": "e02", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e03", "op": "produce", "actor": "D", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e03", "op": "verify", "actor": "A", "target": "e03", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e04", "op": "produce", "actor": "A", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e04", "op": "verify", "actor": "B", "target": "e04", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e05", "op": "produce", "actor": "B", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e05", "op": "verify", "actor": "C", "target": "e05", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e06", "op": "produce", "actor": "C", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e06", "op": "verify", "actor": "D", "target": "e06", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e07", "op": "produce", "actor": "D", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e07", "op": "verify", "actor": "A", "target": "e07", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e08", "op": "produce", "actor": "A", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e08", "op": "verify", "actor": "B", "target": "e08", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e09", "op": "produce", "actor": "B", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e09", "op": "verify", "actor": "C", "target": "e09", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e10", "op": "produce", "actor": "C", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e10", "op": "verify", "actor": "D", "target": "e10", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e11", "op": "produce", "actor": "D", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e11", "op": "verify", "actor": "A", "target": "e11", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "r", "op": "retrospect", "actor": "A", "H": 0.01, "W": 0, "U": 0, "G": 0, "F": 0, "false_checks": {}}

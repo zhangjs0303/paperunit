@@ -1,0 +1,45 @@
+{
+  "schema": "paperunit/v1",
+  "target": {
+    "title": "Causal Mask Prefix Invariance: A Test-Based Audit Fixture",
+    "paper": "examples/causal_mask/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit formal-checker demo",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "prefix invariance of the correct causal mask (causal_ok)",
+      "prefix invariance of the broken no-mask variant (causal_broken), expected to fail",
+      "the presence of a concrete counterexample (position and output delta) for the broken variant"
+    ],
+    "not_tested": [
+      "correctness of attention for inputs other than the fixed fixture input",
+      "training dynamics, model quality, or any claim beyond prefix invariance",
+      "a formal proof over all inputs (the z3_demo symbolic check is a separate fixture)",
+      "anything outside the two claims listed below"
+    ]
+  },
+  "claims": [
+    {
+      "id": "M1",
+      "text": "With the correct causal mask, replacing the suffix tokens of the fixture input leaves the prefix hidden states unchanged (prefix invariance).",
+      "kind": "external",
+      "check": {
+        "cmd": "python3 code/audit_mask.py --variant causal_ok",
+        "timeout_s": 30
+      },
+      "preregistered": true
+    },
+    {
+      "id": "M2",
+      "text": "DETECTOR SELF-TEST: the broken variant that drops the future mask still preserves prefix invariance and must be REFUTED by the audit with a concrete counterexample.",
+      "kind": "external",
+      "check": {
+        "cmd": "python3 code/audit_mask.py --variant causal_broken",
+        "timeout_s": 30
+      },
+      "preregistered": false
+    }
+  ]
+}

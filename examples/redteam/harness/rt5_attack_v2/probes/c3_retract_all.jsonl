@@ -1,0 +1,45 @@
+// C3：主日志 + D 一次性撤回全部 6 件 → R_asof=21.0, R_final=18.0
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"content-free 演示：2+2 是否等于 4","criteria":[{"id":"c1","w":0.17,"kind":"rerun","test":"运行 python3 -c 'print(2+2)'，stdout 必须是 4，且与 artifact 声明的 hash 一致"},{"id":"c2","w":0.17,"kind":"rerun","test":"运行 python3 -c 'print(1+1+1+1)'，stdout 必须是 4，且与 artifact 的 hash 一致"},{"id":"c3","w":0.17,"kind":"rerun","test":"运行 echo 4，stdout 必须是 4，且与 artifact 的 hash 一致（shell 一行也算 rerun）"},{"id":"c4","w":0.17,"kind":"rerun","test":"运行 python3 -c 'print(4*1)'，stdout 必须是 4，且与 artifact 的 hash 一致"},{"id":"c5","w":0.16,"kind":"rerun","test":"运行 python3 -c 'print(len([1,2,3,4]))'，stdout 必须是 4，且与 hash 一致"},{"id":"c6","w":0.16,"kind":"rerun","test":"运行 echo $((2+2))，stdout 必须是 4，且与 artifact 的 hash 一致"}]}
+{"round":1,"id":"ec1bad","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"echo 5","seed":0},"prov":{"sources":["x"],"ai_share":1.0,"version":1,"p_e":0.01}}
+{"round":1,"id":"vc1r1","op":"verify","actor":"B","target":"ec1bad","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":1,"id":"vc1r2","op":"verify","actor":"C","target":"ec1bad","decision":"reject","evidence":"我独立再跑一次仍是 5，同目录没有其它产物，确认这次失败成立。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":1,"id":"ec1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(2+2)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"vc1","op":"verify","actor":"B","target":"ec1","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"mc1","op":"merge","actor":"B","target":"ec1","own_words":"假设是一行 shell 的 stdout 就是 criterion 的全部内容；证据是两位 checker 都复跑过；局限是这只验证了一行脚本，不涉及任何科学结论。"}
+{"round":2,"id":"ec2bad","op":"produce","actor":"A","task":"Q1","criterion":"c2","artifact":{"type":"script","hash":"0","cmd":"echo 5","seed":0},"prov":{"sources":["x"],"ai_share":1.0,"version":1,"p_e":0.01}}
+{"round":2,"id":"vc2r1","op":"verify","actor":"B","target":"ec2bad","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":2,"id":"vc2r2","op":"verify","actor":"C","target":"ec2bad","decision":"reject","evidence":"我独立再跑一次仍是 5，同目录没有其它产物，确认这次失败成立。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":2,"id":"ec2","op":"produce","actor":"A","task":"Q1","criterion":"c2","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(1+1+1+1)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":2,"id":"vc2","op":"verify","actor":"B","target":"ec2","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":2,"id":"mc2","op":"merge","actor":"B","target":"ec2","own_words":"假设是一行 shell 的 stdout 就是 criterion 的全部内容；证据是两位 checker 都复跑过；局限是这只验证了一行脚本，不涉及任何科学结论。"}
+{"round":3,"id":"ec3bad","op":"produce","actor":"A","task":"Q1","criterion":"c3","artifact":{"type":"script","hash":"0","cmd":"echo 5","seed":0},"prov":{"sources":["x"],"ai_share":1.0,"version":1,"p_e":0.01}}
+{"round":3,"id":"vc3r1","op":"verify","actor":"B","target":"ec3bad","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":3,"id":"vc3r2","op":"verify","actor":"C","target":"ec3bad","decision":"reject","evidence":"我独立再跑一次仍是 5，同目录没有其它产物，确认这次失败成立。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":3,"id":"ec3","op":"produce","actor":"A","task":"Q1","criterion":"c3","artifact":{"type":"script","hash":"0","cmd":"echo 4","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":3,"id":"vc3","op":"verify","actor":"B","target":"ec3","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":3,"id":"mc3","op":"merge","actor":"B","target":"ec3","own_words":"假设是一行 shell 的 stdout 就是 criterion 的全部内容；证据是两位 checker 都复跑过；局限是这只验证了一行脚本，不涉及任何科学结论。"}
+{"round":4,"id":"ec4bad","op":"produce","actor":"A","task":"Q1","criterion":"c4","artifact":{"type":"script","hash":"0","cmd":"echo 5","seed":0},"prov":{"sources":["x"],"ai_share":1.0,"version":1,"p_e":0.01}}
+{"round":4,"id":"vc4r1","op":"verify","actor":"B","target":"ec4bad","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":4,"id":"vc4r2","op":"verify","actor":"C","target":"ec4bad","decision":"reject","evidence":"我独立再跑一次仍是 5，同目录没有其它产物，确认这次失败成立。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":4,"id":"ec4","op":"produce","actor":"A","task":"Q1","criterion":"c4","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(4*1)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":4,"id":"vc4","op":"verify","actor":"B","target":"ec4","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":4,"id":"mc4","op":"merge","actor":"B","target":"ec4","own_words":"假设是一行 shell 的 stdout 就是 criterion 的全部内容；证据是两位 checker 都复跑过；局限是这只验证了一行脚本，不涉及任何科学结论。"}
+{"round":5,"id":"ec5bad","op":"produce","actor":"A","task":"Q1","criterion":"c5","artifact":{"type":"script","hash":"0","cmd":"echo 5","seed":0},"prov":{"sources":["x"],"ai_share":1.0,"version":1,"p_e":0.01}}
+{"round":5,"id":"vc5r1","op":"verify","actor":"B","target":"ec5bad","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":5,"id":"vc5r2","op":"verify","actor":"C","target":"ec5bad","decision":"reject","evidence":"我独立再跑一次仍是 5，同目录没有其它产物，确认这次失败成立。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":5,"id":"ec5","op":"produce","actor":"A","task":"Q1","criterion":"c5","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(len([1,2,3,4]))'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":5,"id":"vc5","op":"verify","actor":"B","target":"ec5","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":5,"id":"mc5","op":"merge","actor":"B","target":"ec5","own_words":"假设是一行 shell 的 stdout 就是 criterion 的全部内容；证据是两位 checker 都复跑过；局限是这只验证了一行脚本，不涉及任何科学结论。"}
+{"round":6,"id":"ec6bad","op":"produce","actor":"A","task":"Q1","criterion":"c6","artifact":{"type":"script","hash":"0","cmd":"echo 5","seed":0},"prov":{"sources":["x"],"ai_share":1.0,"version":1,"p_e":0.01}}
+{"round":6,"id":"vc6r1","op":"verify","actor":"B","target":"ec6bad","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":6,"id":"vc6r2","op":"verify","actor":"C","target":"ec6bad","decision":"reject","evidence":"我独立再跑一次仍是 5，同目录没有其它产物，确认这次失败成立。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":6,"id":"ec6","op":"produce","actor":"A","task":"Q1","criterion":"c6","artifact":{"type":"script","hash":"0","cmd":"echo $((2+2))","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":6,"id":"vc6","op":"verify","actor":"B","target":"ec6","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":6,"id":"mc6","op":"merge","actor":"B","target":"ec6","own_words":"假设是一行 shell 的 stdout 就是 criterion 的全部内容；证据是两位 checker 都复跑过；局限是这只验证了一行脚本，不涉及任何科学结论。"}
+{"round":6,"id":"r1","op":"retrospect","actor":"A","notes":"六轮几乎零真实工作；下面这些数字是复演 v0 的自报字段。","H":0.01,"W":0,"U":0,"G":0,"F":12}
+{"round":7,"id":"xc1","op":"retract","actor":"D","target":"ec1","reason":"赛后统一撤回，测试回溯扣分是否真的回溯"}
+{"round":7,"id":"xc2","op":"retract","actor":"D","target":"ec2","reason":"赛后统一撤回，测试回溯扣分是否真的回溯"}
+{"round":7,"id":"xc3","op":"retract","actor":"D","target":"ec3","reason":"赛后统一撤回，测试回溯扣分是否真的回溯"}
+{"round":7,"id":"xc4","op":"retract","actor":"D","target":"ec4","reason":"赛后统一撤回，测试回溯扣分是否真的回溯"}
+{"round":7,"id":"xc5","op":"retract","actor":"D","target":"ec5","reason":"赛后统一撤回，测试回溯扣分是否真的回溯"}
+{"round":7,"id":"xc6","op":"retract","actor":"D","target":"ec6","reason":"赛后统一撤回，测试回溯扣分是否真的回溯"}

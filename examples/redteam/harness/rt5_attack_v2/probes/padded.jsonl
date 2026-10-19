@@ -1,0 +1,17 @@
+// 难度反转 B：难 criterion w=0.01 + 4 个等价琐碎 criterion w=0.2475 → R=5.97
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c_hard","w":0.01,"kind":"rerun","test":"python3 ctmc5_exact.py 输出 5 状态 exact stationary law 与残差"},{"id":"c0","w":0.2475,"kind":"rerun","test":"运行 echo 4 的第 1 个等价写法，stdout 必须是 4，与 hash 一致"},{"id":"c1","w":0.2475,"kind":"rerun","test":"运行 echo 4 的第 2 个等价写法，stdout 必须是 4，与 hash 一致"},{"id":"c2","w":0.2475,"kind":"rerun","test":"运行 echo 4 的第 3 个等价写法，stdout 必须是 4，与 hash 一致"},{"id":"c3","w":0.2475,"kind":"rerun","test":"运行 echo 4 的第 4 个等价写法，stdout 必须是 4，与 hash 一致"}]}
+{"round":1,"id":"e0","op":"produce","actor":"A","task":"Q1","criterion":"c0","artifact":{"type":"script","hash":"0","cmd":"echo 4","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v0","op":"verify","actor":"B","target":"e0","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m0","op":"merge","actor":"B","target":"e0","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"echo 4","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m1","op":"merge","actor":"B","target":"e1","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}
+{"round":1,"id":"e2","op":"produce","actor":"A","task":"Q1","criterion":"c2","artifact":{"type":"script","hash":"0","cmd":"echo 4","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v2","op":"verify","actor":"B","target":"e2","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m2","op":"merge","actor":"B","target":"e2","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}
+{"round":1,"id":"e3","op":"produce","actor":"A","task":"Q1","criterion":"c3","artifact":{"type":"script","hash":"0","cmd":"echo 4","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v3","op":"verify","actor":"B","target":"e3","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m3","op":"merge","actor":"B","target":"e3","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}
+{"round":1,"id":"ebad","op":"produce","actor":"A","task":"Q1","criterion":"c0","artifact":{"type":"script","hash":"0","cmd":"echo 5","seed":0},"prov":{"sources":["x"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"vbad1","op":"verify","actor":"B","target":"ebad","decision":"reject","evidence":"复跑该脚本得到 5 而不是 4，输出与 criterion 不符，判 reject。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":1,"id":"vbad2","op":"verify","actor":"C","target":"ebad","decision":"reject","evidence":"我独立再跑一次仍是 5，同目录没有其它产物，确认这次失败成立。","rerun":{"ok":false,"own_hash":"0"}}

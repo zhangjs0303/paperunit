@@ -1,0 +1,5 @@
+// minimum legal event: content='x', evidence='0123456789'
+{"round": 1, "id": "p", "op": "propose", "actor": "A", "task": "Q", "acceptance": "12345678"}
+{"round": 1, "id": "e", "op": "produce", "actor": "A", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null}
+{"round": 1, "id": "v_e", "op": "verify", "actor": "B", "target": "e", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "r", "op": "retrospect", "actor": "A", "H": 0.01, "W": 0, "U": 0, "G": 0, "F": 0, "false_checks": {}}

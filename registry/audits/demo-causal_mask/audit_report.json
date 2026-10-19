@@ -1,0 +1,176 @@
+{
+  "schema": "paperunit/report/v1",
+  "tool": {
+    "name": "paperunit",
+    "version": "0.2.1"
+  },
+  "target": {
+    "title": "Causal Mask Prefix Invariance: A Test-Based Audit Fixture",
+    "paper": "examples/causal_mask/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit formal-checker demo",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "prefix invariance of the correct causal mask (causal_ok)",
+      "prefix invariance of the broken no-mask variant (causal_broken), expected to fail",
+      "the presence of a concrete counterexample (position and output delta) for the broken variant"
+    ],
+    "not_tested": [
+      "correctness of attention for inputs other than the fixed fixture input",
+      "training dynamics, model quality, or any claim beyond prefix invariance",
+      "a formal proof over all inputs (the z3_demo symbolic check is a separate fixture)",
+      "anything outside the two claims listed below"
+    ]
+  },
+  "policy": {
+    "timeout_s": 120.0,
+    "confidence": 0.95
+  },
+  "environment": {
+    "python": "3.13.11",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "audit_file": "examples/causal_mask/audit.json"
+  },
+  "generated_at": "2026-10-19T12:53:29Z",
+  "claims": [
+    {
+      "id": "M1",
+      "kind": "external",
+      "text": "With the correct causal mask, replacing the suffix tokens of the fixture input leaves the prefix hidden states unchanged (prefix invariance).",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "prefix invariance held: replacing tokens at positions 3..5 left positions 0..2 unchanged (max abs diff 0 <= tolerance 1e-09).",
+      "evidence": {
+        "parsed": {
+          "evidence": {
+            "audit_type": "test-based audit of one fixed fixture input via two-forward prefix invariance; not a formal proof",
+            "changed_suffix_positions": [
+              3,
+              4,
+              5
+            ],
+            "max_abs_diff": 0.0,
+            "method": "two forward passes with identical weights; replace suffix tokens; compare prefix hidden states",
+            "n_tokens": 6,
+            "prefix_len": 3,
+            "prefix_max_abs_diffs": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "reference": "The Mask Is Not the Model (arXiv:2608.22876)",
+            "seed": 0,
+            "tolerance": 1e-09,
+            "variant": "causal_ok"
+          },
+          "reason": "prefix invariance held: replacing tokens at positions 3..5 left positions 0..2 unchanged (max abs diff 0 <= tolerance 1e-09).",
+          "uncertainty": null,
+          "verdict": "SUPPORTED"
+        },
+        "run": {
+          "cmd": "python3 code/audit_mask.py --variant causal_ok",
+          "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/causal_mask",
+          "duration_s": 0.0388,
+          "evidence_sha256": "29419b89ce74a14e6d9e75e13d5231b2afd498fa80c9e15132a34ac313337c33",
+          "exit_code": 0,
+          "stderr_excerpt": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_excerpt": "{\"evidence\": {\"audit_type\": \"test-based audit of one fixed fixture input via two-forward prefix invariance; not a formal proof\", \"changed_suffix_positions\": [3, 4, 5], \"max_abs_diff\": 0.0, \"method\": \"two forward passes with identical weights; replace suffix tokens; compare prefix hidden states\", \"n_tokens\": 6, \"prefix_len\": 3, \"prefix_max_abs_diffs\": [0.0, 0.0, 0.0], \"reference\": \"The Mask Is Not the Model (arXiv:2608.22876)\", \"seed\": 0, \"tolerance\": 1e-09, \"variant\": \"causal_ok\"}, \"reason\": \"prefix invariance held: replacing tokens at positions 3..5 left positions 0..2 unchanged (max abs diff 0 <= tolerance 1e-09).\", \"uncertainty\": null, \"verdict\": \"SUPPORTED\"}\n",
+          "stdout_sha256": "17d94280bfca6cbb2ab23c9c1b25e7d5c11bfb612c7cd7fbbb1e3af86443ed95",
+          "timed_out": false,
+          "timeout_s": 30.0
+        }
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "M2",
+      "kind": "external",
+      "text": "DETECTOR SELF-TEST: the broken variant that drops the future mask still preserves prefix invariance and must be REFUTED by the audit with a concrete counterexample.",
+      "preregistered": false,
+      "verdict": "REFUTED",
+      "reason": "prefix invariance violated at position 0: changing suffix tokens changed the prefix output by 0.564952 (> tolerance 1e-09); the mask does not block attention to future positions.",
+      "evidence": {
+        "parsed": {
+          "evidence": {
+            "audit_type": "test-based audit of one fixed fixture input via two-forward prefix invariance; not a formal proof",
+            "changed_suffix_positions": [
+              3,
+              4,
+              5
+            ],
+            "counterexample": {
+              "abs_diff": 0.564951748089,
+              "changed_suffix_positions": [
+                3,
+                4,
+                5
+              ],
+              "description": "changing tokens at positions 3..5 changed the output at position 0, so future information leaks into the prefix",
+              "position": 0,
+              "prefix_output_after": [
+                0.404743211876,
+                0.531580255199,
+                0.65047415748,
+                -0.862337648832
+              ],
+              "prefix_output_before": [
+                0.294350748826,
+                0.258477150164,
+                0.322941097935,
+                -0.297385900743
+              ]
+            },
+            "first_violation_position": 0,
+            "max_abs_diff": 0.564951748089,
+            "method": "two forward passes with identical weights; replace suffix tokens; compare prefix hidden states",
+            "n_tokens": 6,
+            "prefix_len": 3,
+            "prefix_max_abs_diffs": [
+              0.564951748089,
+              0.326894141002,
+              0.227386797905
+            ],
+            "reference": "The Mask Is Not the Model (arXiv:2608.22876)",
+            "seed": 0,
+            "tolerance": 1e-09,
+            "variant": "causal_broken"
+          },
+          "reason": "prefix invariance violated at position 0: changing suffix tokens changed the prefix output by 0.564952 (> tolerance 1e-09); the mask does not block attention to future positions.",
+          "uncertainty": null,
+          "verdict": "REFUTED"
+        },
+        "run": {
+          "cmd": "python3 code/audit_mask.py --variant causal_broken",
+          "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/causal_mask",
+          "duration_s": 0.0382,
+          "evidence_sha256": "e0790c6509260beeb088b199182b5093bd26c8ffc52f691856d5759677d63ebb",
+          "exit_code": 0,
+          "stderr_excerpt": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_excerpt": "{\"evidence\": {\"audit_type\": \"test-based audit of one fixed fixture input via two-forward prefix invariance; not a formal proof\", \"changed_suffix_positions\": [3, 4, 5], \"counterexample\": {\"abs_diff\": 0.564951748089, \"changed_suffix_positions\": [3, 4, 5], \"description\": \"changing tokens at positions 3..5 changed the output at position 0, so future information leaks into the prefix\", \"position\": 0, \"prefix_output_after\": [0.404743211876, 0.531580255199, 0.65047415748, -0.862337648832], \"prefix_output_before\": [0.294350748826, 0.258477150164, 0.322941097935, -0.297385900743]}, \"first_violation_position\": 0, \"max_abs_diff\": 0.564951748089, \"method\": \"two forward passes with identical weights; replace suffix tokens; compare prefix hidden states\", \"n_tokens\": 6, \"prefix_len\": 3, \"prefix_max_abs_diffs\": [0.564951748089, 0.326894141002, 0.227386797905], \"reference\": \"The Mask Is Not the Model (arXiv:2608.22876)\", \"seed\": 0, \"tolerance\": 1e-09, \"variant\": \"causal_broken\"}, \"reason\": \"prefix invariance violated at position 0: changing suffix tokens changed the prefix output by 0.564952 (> tolerance 1e-09); the mask does not block attention to future positions.\", \"uncertainty\": null, \"verdict\": \"REFUTED\"}\n",
+          "stdout_sha256": "3fba467fa71647d59f8f61903aa0bd64402526f493b7fc9a02c13226f3b5ed3e",
+          "timed_out": false,
+          "timeout_s": 30.0
+        }
+      },
+      "uncertainty": null
+    }
+  ],
+  "verdict_counts": {
+    "SUPPORTED": 1,
+    "REFUTED": 1,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 0
+  },
+  "limits": [
+    "correctness of attention for inputs other than the fixed fixture input",
+    "training dynamics, model quality, or any claim beyond prefix invariance",
+    "a formal proof over all inputs (the z3_demo symbolic check is a separate fixture)",
+    "anything outside the two claims listed below",
+    "An audit tests only the listed claims on the stated commit in the stated environment; it is not a verdict on the paper's scientific value, and it carries no aggregate score."
+  ],
+  "report_sha256": "50c6c65d2704591149000a0c7272b0bb8671dd5486899aaced0ea0c131536e80"
+}

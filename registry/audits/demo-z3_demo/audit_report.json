@@ -1,0 +1,136 @@
+{
+  "schema": "paperunit/report/v1",
+  "tool": {
+    "name": "paperunit",
+    "version": "0.2.1"
+  },
+  "target": {
+    "title": "Symbolic Causal-Mask Check with z3: A Counterexample-Finding Demo",
+    "paper": "examples/z3_demo/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit formal-checker demo",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "for every 0 <= i < j < 32, the correct causal mask construction blocks attention from i to j",
+      "the deliberately broken construction, expected to admit a future attention edge (REFUTED)",
+      "the exact counterexample positions reported by the SMT solver for the broken construction"
+    ],
+    "not_tested": [
+      "any concrete Python implementation's floating-point behavior (see examples/causal_mask)",
+      "sequence lengths above 32",
+      "mask constructions other than the two encoded predicates",
+      "anything outside the two claims listed below; without z3-solver both claims are INCONCLUSIVE by design"
+    ]
+  },
+  "policy": {
+    "timeout_s": 120.0,
+    "confidence": 0.95
+  },
+  "environment": {
+    "python": "3.13.11",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "audit_file": "examples/z3_demo/audit.json"
+  },
+  "generated_at": "2026-10-19T12:53:30Z",
+  "claims": [
+    {
+      "id": "Z1",
+      "kind": "external",
+      "text": "The correct causal-mask construction blocks every attention edge to a future position for all sequence lengths T <= 32.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "z3 proved the property (unsat): for every pair of positions 0 <= i < j < 32 the causal mask blocks attention from i to j, covering all sequence lengths T <= 32.",
+      "evidence": {
+        "parsed": {
+          "evidence": {
+            "audit_type": "symbolic SMT check of the encoded mask construction; counterexample-based",
+            "position_encoding": "5-bit unsigned bit-vectors, positions 0..31 (covers T <= 32)",
+            "property": "for every 0 <= i < j < 32: attention from position i to position j is blocked (no token may attend to a future position)",
+            "reference": "The Mask Is Not the Model (arXiv:2608.22876)",
+            "solver": "z3",
+            "solver_result": "unsat",
+            "variant": "correct",
+            "z3_version": "5.3.1"
+          },
+          "reason": "z3 proved the property (unsat): for every pair of positions 0 <= i < j < 32 the causal mask blocks attention from i to j, covering all sequence lengths T <= 32.",
+          "uncertainty": null,
+          "verdict": "SUPPORTED"
+        },
+        "run": {
+          "cmd": "python3 code/check_mask_z3.py --variant correct",
+          "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/z3_demo",
+          "duration_s": 0.1285,
+          "evidence_sha256": "a32260eb28aafc46291707e6e6f09bec502489de8be5143d1ed70f37d794db51",
+          "exit_code": 0,
+          "stderr_excerpt": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_excerpt": "{\"evidence\": {\"audit_type\": \"symbolic SMT check of the encoded mask construction; counterexample-based\", \"position_encoding\": \"5-bit unsigned bit-vectors, positions 0..31 (covers T <= 32)\", \"property\": \"for every 0 <= i < j < 32: attention from position i to position j is blocked (no token may attend to a future position)\", \"reference\": \"The Mask Is Not the Model (arXiv:2608.22876)\", \"solver\": \"z3\", \"solver_result\": \"unsat\", \"variant\": \"correct\", \"z3_version\": \"5.3.1\"}, \"reason\": \"z3 proved the property (unsat): for every pair of positions 0 <= i < j < 32 the causal mask blocks attention from i to j, covering all sequence lengths T <= 32.\", \"uncertainty\": null, \"verdict\": \"SUPPORTED\"}\n",
+          "stdout_sha256": "b597891063f42f0d15a7d0bc0be4d63f83d6852e8c5a655a4ee8fa2f5079d064",
+          "timed_out": false,
+          "timeout_s": 60.0
+        }
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "Z2",
+      "kind": "external",
+      "text": "DETECTOR SELF-TEST: the deliberately broken mask construction (no future mask) must be REFUTED with a concrete counterexample.",
+      "preregistered": false,
+      "verdict": "REFUTED",
+      "reason": "z3 found a counterexample (sat): the mask allows position 0 to attend to future position 1, so the construction is not causal.",
+      "evidence": {
+        "parsed": {
+          "evidence": {
+            "audit_type": "symbolic SMT check of the encoded mask construction; counterexample-based",
+            "counterexample": {
+              "description": "position 0 is allowed to attend to future position 1",
+              "i": 0,
+              "j": 1
+            },
+            "position_encoding": "5-bit unsigned bit-vectors, positions 0..31 (covers T <= 32)",
+            "property": "for every 0 <= i < j < 32: attention from position i to position j is blocked (no token may attend to a future position)",
+            "reference": "The Mask Is Not the Model (arXiv:2608.22876)",
+            "solver": "z3",
+            "solver_result": "sat",
+            "variant": "broken",
+            "z3_version": "5.3.1"
+          },
+          "reason": "z3 found a counterexample (sat): the mask allows position 0 to attend to future position 1, so the construction is not causal.",
+          "uncertainty": null,
+          "verdict": "REFUTED"
+        },
+        "run": {
+          "cmd": "python3 code/check_mask_z3.py --variant broken",
+          "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/z3_demo",
+          "duration_s": 0.0868,
+          "evidence_sha256": "a7777f267b9ab32ddac58bd1c39586e6ab83f4599bfdcc4e615bcc464ecdff80",
+          "exit_code": 0,
+          "stderr_excerpt": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_excerpt": "{\"evidence\": {\"audit_type\": \"symbolic SMT check of the encoded mask construction; counterexample-based\", \"counterexample\": {\"description\": \"position 0 is allowed to attend to future position 1\", \"i\": 0, \"j\": 1}, \"position_encoding\": \"5-bit unsigned bit-vectors, positions 0..31 (covers T <= 32)\", \"property\": \"for every 0 <= i < j < 32: attention from position i to position j is blocked (no token may attend to a future position)\", \"reference\": \"The Mask Is Not the Model (arXiv:2608.22876)\", \"solver\": \"z3\", \"solver_result\": \"sat\", \"variant\": \"broken\", \"z3_version\": \"5.3.1\"}, \"reason\": \"z3 found a counterexample (sat): the mask allows position 0 to attend to future position 1, so the construction is not causal.\", \"uncertainty\": null, \"verdict\": \"REFUTED\"}\n",
+          "stdout_sha256": "1835ed8c6dbaa2d7a844f6d3f625891012eb00621308074dbeafc7b95ba01946",
+          "timed_out": false,
+          "timeout_s": 60.0
+        }
+      },
+      "uncertainty": null
+    }
+  ],
+  "verdict_counts": {
+    "SUPPORTED": 1,
+    "REFUTED": 1,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 0
+  },
+  "limits": [
+    "any concrete Python implementation's floating-point behavior (see examples/causal_mask)",
+    "sequence lengths above 32",
+    "mask constructions other than the two encoded predicates",
+    "anything outside the two claims listed below; without z3-solver both claims are INCONCLUSIVE by design",
+    "An audit tests only the listed claims on the stated commit in the stated environment; it is not a verdict on the paper's scientific value, and it carries no aggregate score."
+  ],
+  "report_sha256": "36660109ad9fe27bc68e97097fd25fdd18c461b768d4dfdd9796afb1b9b59fb5"
+}

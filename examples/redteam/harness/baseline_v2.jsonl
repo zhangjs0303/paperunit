@@ -1,0 +1,20 @@
+// baseline_v2.jsonl —— v0.2 规则下的「诚实小团队」对照：2 个预注册任务、3 个加权验收标准，
+// 一次真实失败的测试、一次真返工、一次真撤回。用于和 v0.2 攻击日志对比。
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"3 状态 CTMC 的 exact stationary law","criteria":[{"id":"c1","w":0.5,"kind":"rerun","test":"python3 check_q1.py 输出平稳分布，且 hash 与 artifact 声明一致"},{"id":"c2","w":0.5,"kind":"prediction","test":"预测 W=0 时 |pi P - pi|_1 < 1e-12","threshold":"|pi P - pi|_1 < 1e-12"}]}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"sha256:aaa","cmd":"python3 check_q1.py","seed":0},"prov":{"sources":["https://example.org/ctmc-method"],"ai_share":0.4,"version":1}}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"我独立重写求解器，平稳分布与残差量级一致，脚本复跑 hash 相同","rerun":{"ok":true,"own_hash":"sha256:bbb"}}
+{"round":1,"id":"m1","op":"merge","actor":"C","target":"e1","own_words":"假设是有限状态精确枚举；证据是独立复跑一致；局限是只覆盖 3 状态，未做有限时间误差分析。"}
+{"round":1,"id":"e2","op":"produce","actor":"A","task":"Q1","criterion":"c2","artifact":{"type":"prediction","prediction":"W=0 时残差为浮点极限","threshold":"|pi P - pi|_1 < 1e-12"},"prov":{"sources":["https://example.org/ctmc-method"],"ai_share":0.3,"version":1}}
+{"round":1,"id":"v2","op":"verify","actor":"B","target":"e2","decision":"accept","evidence":"复跑同一脚本得到残差 3.1e-16，低于预先登记的阈值","rerun":{"ok":true,"own_hash":"sha256:ccc"}}
+{"round":1,"id":"m2","op":"merge","actor":"C","target":"e2","own_words":"假设是浮点误差可忽略；证据是实测残差 3.1e-16 远低于预先登记的阈值；局限是未解释残差来源，也未做消融实验，不能外推到更大状态空间。"}
+{"round":1,"id":"r1","op":"retrospect","actor":"A","notes":"第一次 assert 失败：把 P 转置，测试抓到，随后修正。"}
+
+{"round":2,"id":"pQ2","op":"propose","actor":"D","task":"Q2","question":"2 节点 Ising 模型 W=0 时的独立性","criteria":[{"id":"c1","w":0.7,"kind":"rerun","test":"python3 check_q2.py 枚举 4 状态 joint，输出独立性与 marginals 一致"},{"id":"c2","w":0.3,"kind":"counterexample","test":"搜索是否存在 joint 独立但 marginals 矛盾的数值反例，输出搜索日志"}]}
+{"round":2,"id":"e3","op":"produce","actor":"D","task":"Q2","criterion":"c1","artifact":{"type":"script","hash":"sha256:ddd","cmd":"python3 check_q2.py","seed":1},"prov":{"sources":["https://example.org/ising"],"ai_share":0.5,"version":1}}
+{"round":2,"id":"v3","op":"verify","actor":"A","target":"e3","decision":"reject","evidence":"复算发现 W=0 分支用了未归一化 joint，marginals 与 joint 不一致，输出反例表","rerun":{"ok":false,"own_hash":"sha256:eee"}}
+{"round":2,"id":"e4","op":"produce","actor":"D","task":"Q2","criterion":"c1","artifact":{"type":"script","hash":"sha256:fff","cmd":"python3 check_q2_fixed.py","seed":1},"prov":{"sources":["https://example.org/ising"],"ai_share":0.5,"version":2}}
+{"round":2,"id":"v4","op":"verify","actor":"A","target":"e4","decision":"accept","evidence":"重跑修正脚本，joint 与 marginals 一致，独立性 residual=4e-17；反例已消失","rerun":{"ok":true,"own_hash":"sha256:ggg"}}
+{"round":2,"id":"m3","op":"merge","actor":"B","target":"e4","own_words":"假设是有限状态枚举给出 exact ground truth；证据是修正后独立复算一致；局限是只做了 2 节点 toy。"}
+{"round":2,"id":"r2","op":"retrospect","actor":"B","notes":"一次返工：v3 的否定成立，归一化错误属可避免错误。"}
+
+{"round":3,"id":"t1","op":"retract","actor":"A","target":"e1","reason":"发现 c1 的 hash 记录对应旧版本脚本，撤回该条 credit 并重做"}

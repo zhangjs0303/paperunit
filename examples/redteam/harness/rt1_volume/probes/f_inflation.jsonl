@@ -1,0 +1,2 @@
+// one retrospect line, F=100 self-reported
+{"round": 1, "id": "r", "op": "retrospect", "actor": "A", "H": 0.01, "W": 0, "U": 0, "G": 0, "F": 100, "false_checks": {}, "notes": "自报 100 个有清晰记录的失败测试；没有任何测试记录"}

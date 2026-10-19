@@ -1,0 +1,186 @@
+{
+  "schema": "paperunit/report/v1",
+  "tool": {
+    "name": "paperunit",
+    "version": "0.2.1"
+  },
+  "target": {
+    "title": "Dogfood audit of the DeSci red-team scoring harness",
+    "paper": "vendored copy of the DeSci red-team harness (read-only; see harness/README.md)",
+    "repo_commit": "unversioned local tree: score.py sha256 7d0ba01971be..., verify_all.py sha256 b0faa2d49cf4...",
+    "audited_by": "paperunit demo (v0.2)",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "baseline total R printed by score.py",
+      "rt1_volume total R printed by score.py",
+      "exit status of verify_all.py",
+      "one deliberately false expectation used as a detector self-test"
+    ],
+    "not_tested": [
+      "scientific validity or incentive properties of the red-team scoring rules",
+      "behavior on modified, additional, or regenerated logs",
+      "floating-point internals of score.py or score_v2.py",
+      "anything outside the four claims listed here"
+    ]
+  },
+  "policy": {
+    "timeout_s": 120.0,
+    "confidence": 0.95
+  },
+  "environment": {
+    "python": "3.13.11",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "audit_file": "examples/redteam/audit.json"
+  },
+  "generated_at": "2026-10-19T12:53:28Z",
+  "claims": [
+    {
+      "id": "R1",
+      "kind": "stdout",
+      "text": "The frozen v0 scorer reproduces the baseline total R = 9.450.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "all 1 expectation(s) passed",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "'总 R = 9.450'",
+            "passed": true,
+            "rule": "stdout_contains"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 score.py baseline.jsonl",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/redteam/harness",
+            "duration_s": 0.0306,
+            "evidence_sha256": "98046b4830d183a36a99047bd4f25a249a74203c85855b49350084ea02819109",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "==============================================================================\nDeSci 协作系统 v0 —— 红队裁判读数\n配置: c_max=30.0  H单位=hours  F取值=auto  点数上限读法=absolute\n事件数=3  任务数=2  轮次数=2  成员=['A', 'B', 'C', 'D']\n==============================================================================\n  轮    V      P    F用    F报    F导       H    W    U    G       R_t      R_回溯\n  1    1  0.900   1.0   1.0   0.0    1.50  0.0  0.0  0.0     5.650     5.650\n  2    1  0.950   1.0   0.0   1.0    1.00  1.0  0.0  0.0     3.800     3.800\n------------------------------------------------------------------------------\n总 R = 9.450   总 R(最终状态回溯) = 9.450\n\n个体贡献点（每轮 r_i 与累计 c_i）:\n  轮1   A: r=  0.850  c=  0.850  {'produce': 0.85}\n  轮1   B: r=  1.700  c=  1.700  {'verify': 1.7}\n  轮2   A: r=  3.000  c=  3.850  {'verify': 3.0}\n  轮2   D: r=  1.900  c=  1.900  {'produce': 0.9, 'provenance': 1.0}\n\n合法性: 通过（未触发任何机械约束）\n未被裁判核验的自报字段 16 类:\n  ~ e1.p (生产者申报)\n  ~ e2.p (生产者申报)\n  ~ e3.p (生产者申报)\n  ~ round 1.F (自报)\n  ~ round 1.G (自报)\n  ~ round 1.H (自报)\n  ~ round 1.U (自报)\n  ~ round 1.W (自报)\n  ~ round 2.F (自报)\n  ~ round 2.G (自报)\n  ~ round 2.H (自报)\n  ~ round 2.U (自报)\n  ~ round 2.W (自报)\n  ~ v1.v (复核者申报)\n  ~ v2.v (复核者申报)\n  ~ v3.v (复核者申报)\n==============================================================================\n",
+            "stdout_sha256": "6b9158247de4c81a98c031f70ca2801f9404711cdcf35d313a021717728e0158",
+            "timed_out": false,
+            "timeout_s": 60.0
+          }
+        ]
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "R2",
+      "kind": "stdout",
+      "text": "The frozen v0 scorer reproduces the rt1_volume total R = 92.997.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "all 1 expectation(s) passed",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "'总 R = 92.997'",
+            "passed": true,
+            "rule": "stdout_contains"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 score.py rt1_volume/events.jsonl",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/redteam/harness",
+            "duration_s": 0.0311,
+            "evidence_sha256": "56ed4b36501f2cd20dca177d942d94d897712fff27fd86946cbf830689767854",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "==============================================================================\nDeSci 协作系统 v0 —— 红队裁判读数\n配置: c_max=30.0  H单位=hours  F取值=auto  点数上限读法=absolute\n事件数=37  任务数=2  轮次数=3  成员=['A', 'B', 'C', 'D']\n==============================================================================\n  轮    V      P    F用    F报    F导       H    W    U    G       R_t      R_回溯\n  1   12  1.000   0.0   0.0   0.0    0.01  0.0  0.0  0.0    37.999    37.999\n  2   12  1.000  12.0   0.0  12.0    0.01  0.0  0.0  0.0    49.999    49.999\n  3    1  1.000   0.0   0.0   0.0    0.01  0.0  0.0  0.0     4.999    -0.001\n------------------------------------------------------------------------------\n总 R = 92.997   总 R(最终状态回溯) = 87.997\n\n个体贡献点（每轮 r_i 与累计 c_i）:\n  轮1   A: r= 13.000  c= 13.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 7.0}\n  轮1   B: r= 12.000  c= 12.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 6.0}\n  轮1   C: r= 13.000  c= 13.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 7.0}\n  轮1   D: r= 12.000  c= 12.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 6.0}\n  轮2   A: r= 18.000  c= 30.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 12.0}\n  轮2   B: r= 18.000  c= 30.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 12.0}\n  轮2   C: r= 18.000  c= 30.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 12.0}\n  轮2   D: r= 18.000  c= 30.000  {'produce': 3.0, 'provenance': 3.0, 'verify': 12.0}\n  轮3   A: r=  2.000  c= 30.000  {'produce': 1.0, 'provenance': 1.0}\n  轮3   B: r=  2.000  c= 30.000  {'verify': 2.0}\n\n规则歧义命中 2 条:\n  - v10: reproduce 不是七类操作之一，此处按 verify.mode=reproduce 实现\n  - v12: reproduce 不是七类操作之一，此处按 verify.mode=reproduce 实现\n合法性: 通过（未触发任何机械约束）\n未被裁判核验的自报字段 89 类:\n  ~ e01.p (生产者申报)\n  ~ e02.p (生产者申报)\n  ~ e03.p (生产者申报)\n  ~ e04.p (生产者申报)\n  ~ e05.p (生产者申报)\n  ~ e06.p (生产者申报)\n  ~ e07.p (生产者申报)\n  ~ e08.p (生产者申报)\n  ~ e09.p (生产者申报)\n  ~ e10.p (生产者申报)\n  ~ e11.p (生产者申报)\n  ~ e12.p (生产者申报)\n  ~ e13.p (生产者申报)\n  ~ e13r.p (生产者申报)\n  ~ e14.p (生产者申报)\n  ~ e14r.p (生产者申报)\n  ~ e15.p (生产者申报)\n  ~ e15r.p (生产者申\n... [truncated 119 chars]",
+            "stdout_sha256": "87a5e528a09590f7bc2cb2a952a42d3bf64db6c7c7b7a2e947c38006b9f34b66",
+            "timed_out": false,
+            "timeout_s": 60.0
+          }
+        ]
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "R3",
+      "kind": "exit",
+      "text": "The red-team's verify_all.py self-check exits 0.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "all 1 expectation(s) passed",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "exit 0 vs 0",
+            "passed": true,
+            "rule": "exit_code"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 verify_all.py",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/redteam/harness",
+            "duration_s": 1.1668,
+            "evidence_sha256": "4ab68e051bc1d06b58ac623b7110d13b8465639ffdc1ef9b325a96ab8bee3c07",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "==============================================================================\nA. v0 红队日志（冻结裁判 score.py，默认读法）\n==============================================================================\n  baseline.jsonl            R=     9.450  回溯=     9.450  rc=0\n  rt1_volume                R=    92.997  回溯=    87.997  rc=0\n  rt2_fail2earn             R=    47.450  回溯=    37.750  rc=0\n  rt3_paperwork             R=    26.000  回溯=    18.000  rc=0\n  rt4_enforcement           R=    16.000  回溯=     8.000  rc=0\n\n  Lead 最小体量攻击（content=数一下 i, ai_share=1.0）：\n    n= 2 个微事件        R=     7.999  rc=0\n    n=12 个微事件        R=    37.999  rc=0\n\n  Lead 单行 retrospect 攻击：\n    F=1e6、零事件         R=1000000.000  rc=0\n\n  读法敏感性（同一份 rt4 日志）：\n    (default)                    R=  16.000\n    --h-unit minutes             R=  24.850\n    --f-mode derived             R=  12.000\n    --f-mode reported            R=  15.000\n\n  消融 1：rt3 日志删掉全部 merge → R 是否变化\n    原 26.000 → 删 merge 后 26.000  (不变)\n  消融 2：rt3 日志把 ai_share 全改成 0（纯人类）→ R 是否变化\n    原 26.000 → ai_share=0 后 26.000  (不变)\n\n==============================================================================\nB. v0.2 修订（score_v2.py，as-of / final 两种口径）\n==============================================================================\n  baseline_v2.jsonl          R_asof=  7.050  R_final=  6.300  rc=0\n\n  C1 拆分 criterion 数（每个都独立验收、内容为空）：\n    criteria= 1            R_asof=  5.000  Ṽ=1.000  rc=0\n    criteria= 4            R_asof=  5.000  Ṽ=1.000  rc=0\n    criteria=10            R_asof=  5.000  Ṽ=1.000  rc=0\n    criteria=20            R_asof=  5.000  Ṽ=1.000  rc=0\n\n  C1' 同一 criterion 灌多个 artifact（应幂等）：\n    per_criterion=1       R_asof=  5.000  credited=1  rc=0\n    per_criterion=3       R_asof=  5.000  credited=1  rc=0\n    per_criterion=5       R_asof=  5.000  credited=1  rc=0\n\n  C3 先 merge 后 retract（clawback）：\n    R_asof=  5.000  R_final=  2.000  rc=0\n\n  v0.2 残余攻击（内容全空、hash/cmd/sources 全假）：\n    单任务 3 个 criterion   R_asof=  5.000  Ṽ=1.000\n    3 个琐碎任务            R_asof=  5.000\n  \n... [truncated 1376 chars]",
+            "stdout_sha256": "5c94df54c31a71572f924794ed2ffeba820543ac1b47a54c1ea915ca4b921bef",
+            "timed_out": false,
+            "timeout_s": 60.0
+          }
+        ]
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "R4",
+      "kind": "stdout",
+      "text": "SELF-TEST: the deliberately wrong expectation 总 R = 999.999 must be REFUTED; this demonstrates that the audit catches a false claim.",
+      "preregistered": false,
+      "verdict": "REFUTED",
+      "reason": "expectation failed: stdout_contains: '总 R = 999.999'",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "'总 R = 999.999'",
+            "passed": false,
+            "rule": "stdout_contains"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 score.py baseline.jsonl",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/redteam/harness",
+            "duration_s": 0.042,
+            "evidence_sha256": "98046b4830d183a36a99047bd4f25a249a74203c85855b49350084ea02819109",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "==============================================================================\nDeSci 协作系统 v0 —— 红队裁判读数\n配置: c_max=30.0  H单位=hours  F取值=auto  点数上限读法=absolute\n事件数=3  任务数=2  轮次数=2  成员=['A', 'B', 'C', 'D']\n==============================================================================\n  轮    V      P    F用    F报    F导       H    W    U    G       R_t      R_回溯\n  1    1  0.900   1.0   1.0   0.0    1.50  0.0  0.0  0.0     5.650     5.650\n  2    1  0.950   1.0   0.0   1.0    1.00  1.0  0.0  0.0     3.800     3.800\n------------------------------------------------------------------------------\n总 R = 9.450   总 R(最终状态回溯) = 9.450\n\n个体贡献点（每轮 r_i 与累计 c_i）:\n  轮1   A: r=  0.850  c=  0.850  {'produce': 0.85}\n  轮1   B: r=  1.700  c=  1.700  {'verify': 1.7}\n  轮2   A: r=  3.000  c=  3.850  {'verify': 3.0}\n  轮2   D: r=  1.900  c=  1.900  {'produce': 0.9, 'provenance': 1.0}\n\n合法性: 通过（未触发任何机械约束）\n未被裁判核验的自报字段 16 类:\n  ~ e1.p (生产者申报)\n  ~ e2.p (生产者申报)\n  ~ e3.p (生产者申报)\n  ~ round 1.F (自报)\n  ~ round 1.G (自报)\n  ~ round 1.H (自报)\n  ~ round 1.U (自报)\n  ~ round 1.W (自报)\n  ~ round 2.F (自报)\n  ~ round 2.G (自报)\n  ~ round 2.H (自报)\n  ~ round 2.U (自报)\n  ~ round 2.W (自报)\n  ~ v1.v (复核者申报)\n  ~ v2.v (复核者申报)\n  ~ v3.v (复核者申报)\n==============================================================================\n",
+            "stdout_sha256": "6b9158247de4c81a98c031f70ca2801f9404711cdcf35d313a021717728e0158",
+            "timed_out": false,
+            "timeout_s": 60.0
+          }
+        ]
+      },
+      "uncertainty": null
+    }
+  ],
+  "verdict_counts": {
+    "SUPPORTED": 3,
+    "REFUTED": 1,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 0
+  },
+  "limits": [
+    "scientific validity or incentive properties of the red-team scoring rules",
+    "behavior on modified, additional, or regenerated logs",
+    "floating-point internals of score.py or score_v2.py",
+    "anything outside the four claims listed here",
+    "An audit tests only the listed claims on the stated commit in the stated environment; it is not a verdict on the paper's scientific value, and it carries no aggregate score."
+  ],
+  "report_sha256": "dcd81abda3b10ef26ddad4a358630e289e23c0e260587dc5985fa4e8b726fccc"
+}

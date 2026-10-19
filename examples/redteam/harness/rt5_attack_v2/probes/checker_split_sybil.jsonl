@@ -1,0 +1,9 @@
+// checker 份额 sybil 稀释：challenge→accept 反复插入 co-checker，三人平分 0.5 的 checker 份额
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c1","w":1.0,"kind":"rerun","test":"运行 python3 -c 'print(2+2)'，stdout 必须是 4，且与 artifact 声明的 hash 一致"}]}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(2+2)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"ch1","op":"challenge","actor":"C","target":"e1","claim":"我不做任何检查，只声明这个 artifact 需要再看一眼（零成本占位）。","evidence":"本条不含任何新证据；目的是把状态推回 disputed 以便插入自己的 accept。"}
+{"round":1,"id":"v2","op":"verify","actor":"C","target":"e1","decision":"accept","evidence":"我也没有复跑，只写 20 个字符的 evidence 就接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"ch2","op":"challenge","actor":"D","target":"e1","claim":"同样不做任何检查，第二次把状态推回 disputed。","evidence":"同上：目的只是让自己也能成为 accept checker 之一。"}
+{"round":1,"id":"v3","op":"verify","actor":"D","target":"e1","decision":"accept","evidence":"同样没有复跑；20 字符 evidence 足够通过合法性。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m1","op":"merge","actor":"B","target":"e1","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}

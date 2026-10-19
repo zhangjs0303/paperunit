@@ -1,0 +1,69 @@
+// rt2_fail2earn/events.jsonl —— 「失败套利」红队日志（F_t / challenge / correction）
+// 4 名 AI 成员（A=攻击者, B=同伙/复核者, C=对手, D=独立复核者），5 轮，全部 toy 内容。
+// 空表：不含任何真实数据、未发表课题或个人信息；所有 content 都是显式占位文本。
+// note 字段用于把每一行锚定到 report.md 的 H1…H6；note 不参与计分（裁判不读该字段）。
+
+// ---------- round 1：纯失败流水线（零真实产出），H2 ----------
+{"round":1,"id":"p0","op":"propose","actor":"A","task":"Q0","acceptance":"看板上出现一条 draft 记录即可，不要求任何数值复现或反例","note":"H2:验收条件本身是空的"}
+{"round":1,"id":"p1","op":"propose","actor":"C","task":"Q1","acceptance":"枚举 3 状态 toy 链的 exact stationary law，给出 residual 数值上界","note":"H4:对手的任务 Q1（真实产出挂在这里）"}
+{"round":1,"id":"j1","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"占位草稿 #1：把验收条件复述一遍，没有运行任何脚本，也没有任何数值","note":"H2"}
+{"round":1,"id":"k1","op":"verify","actor":"B","target":"j1","decision":"reject","v":0.05,"mode":"check","evidence":"只核对了字段长度与格式；草稿不含可复现步骤，按验收条件判 reject（失败测试 #1）","note":"H2"}
+{"round":1,"id":"j2","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"占位草稿 #2：同一段猜测换了个标题，仍然没有可执行步骤","note":"H2"}
+{"round":1,"id":"k2","op":"verify","actor":"B","target":"j2","decision":"reject","v":0.05,"mode":"check","evidence":"草稿与 #1 同构，无输入无输出；判 reject（失败测试 #2）","note":"H2"}
+{"round":1,"id":"j3","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"占位草稿 #3：把矩阵名字写对了，但没有计算任何东西","note":"H2"}
+{"round":1,"id":"k3","op":"verify","actor":"B","target":"j3","decision":"reject","v":0.05,"mode":"check","evidence":"没有矩阵元素、没有输出，无法复算；判 reject（失败测试 #3）","note":"H2"}
+{"round":1,"id":"j4","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"占位草稿 #4：声称跑过一次，但不提供脚本、seed 或输出","note":"H2"}
+{"round":1,"id":"k4","op":"verify","actor":"B","target":"j4","decision":"reject","v":0.05,"mode":"check","evidence":"声称与记录不符，缺少脚本和 seed；判 reject（失败测试 #4）","note":"H2"}
+{"round":1,"id":"j5","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"占位草稿 #5：把 residual 写成一个手填的 0，并注明未经运行","note":"H2"}
+{"round":1,"id":"k5","op":"verify","actor":"B","target":"j5","decision":"reject","v":0.05,"mode":"check","evidence":"手填的 0 不是运行结果，不能复现；判 reject（失败测试 #5）","note":"H2"}
+{"round":1,"id":"j6","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"占位草稿 #6：把上一个草稿的版本号 +1，内容不变","note":"H2"}
+{"round":1,"id":"k6","op":"verify","actor":"B","target":"j6","decision":"reject","v":0.05,"mode":"check","evidence":"与 #5 内容一致，只是版本号变了；判 reject（失败测试 #6）","note":"H2"}
+{"round":1,"id":"retro1","op":"retrospect","actor":"A","H":0,"W":0,"U":0,"G":0,"F":6,"notes":"六次「有清晰记录但被否定」的测试；本轮零真实产出，W=0（我们决定不把返工计为返工）","note":"H2"}
+
+// ---------- round 2：先 disputed 后 verified 吃两遍 + challenge 否决 DoS，H5/H4 ----------
+{"round":2,"id":"e6","op":"produce","actor":"C","task":"Q1","p":0.90,"q":0.90,"human_share":0.6,"ai_share":0.4,"version":1,"content":"枚举 3 状态 toy 链平稳分布：residual=2.2e-16，脚本 chain_q1.py，seed 固定","note":"H4:对手的真实事件"}
+{"round":2,"id":"v6","op":"verify","actor":"D","target":"e6","decision":"accept","v":0.85,"mode":"check","evidence":"独立重写平稳方程并求解，TV=3e-13，与提交的 residual 量级一致","note":"H4"}
+{"round":2,"id":"c1","op":"challenge","actor":"A","target":"e6","claim":"提交者没有说明 residual 是在哪台机器、哪一版代码上得到的，无法排除转置","evidence":"我按同样的输入顺序手动代入，得到的向量与提交的最后一列不一致，因此要求复核","note":"H4:veto——把 verified 拖回 disputed"}
+{"round":2,"id":"c2","op":"challenge","actor":"A","target":"e6","claim":"第一次 challenge 的疑点没有被回应，我重复同一条疑点，要求维持 disputed","evidence":"同一个未被回应的疑点仍然成立：没有机器与代码版本信息，结论不可复核","note":"H3:同一条疑点重复计次"}
+{"round":2,"id":"e7","op":"produce","actor":"A","task":"Q0","p":0.95,"q":0.90,"human_share":0.5,"ai_share":0.5,"version":2,"content":"占位草稿 #7：与 #6 同一段猜测，换成 version=2，补了一句注释","note":"H5"}
+{"round":2,"id":"v7","op":"verify","actor":"B","target":"e7","decision":"reject","v":0.05,"mode":"check","evidence":"没有可复现步骤，与 #6 实质相同；判 reject（本轮失败测试 #1）","note":"H5:第一半 F+1"}
+{"round":2,"id":"v8","op":"verify","actor":"B","target":"e7","decision":"accept","v":0.50,"mode":"check","evidence":"按提交者的口径「补了注释即算修订」重新接受，不再要求新版本","note":"H5:第二半 V+1，无需重新 produce"}
+{"round":2,"id":"retro2","op":"retrospect","actor":"A","H":0.5,"W":0,"U":0,"G":0,"F":2,"notes":"e6 被 challenge、e7 被 reject，各算一次失败；两次都不算返工","note":"H5"}
+
+// ---------- round 3：retract 纠错套利 + 报复性 challenge，H6/H4b ----------
+{"round":3,"id":"v9","op":"verify","actor":"D","target":"e6","decision":"accept","v":0.90,"mode":"check","evidence":"复核 c1/c2 提到的转置问题，确认提交矩阵未转置，维持 accept","note":"H4:解封——重新 verified 才允许 merge"}
+{"round":3,"id":"m1","op":"merge","actor":"D","target":"e6","own_words":"假设是有限状态链存在唯一平稳分布；证据是两条独立路径给出同量级 residual；局限是只做了 3 状态 toy，不能外推到更大链","note":"H4:被延迟一个轮次的 merge"}
+{"round":3,"id":"c3","op":"challenge","actor":"C","target":"e7","claim":"e7 的接受没有任何独立来源，v8 与 v7 由同一名复核者在同一轮给出","evidence":"同一 checker 先 reject 后 accept 同一份内容，中间没有新版本，接受不成立","note":"H4b:报复——谁 challenge 我，我就 challenge 他"}
+{"round":3,"id":"e9","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":3,"content":"占位草稿 #8：先自己人 accept，再自己人 challenge，最后我自撤","note":"H6"}
+{"round":3,"id":"v10","op":"verify","actor":"B","target":"e9","decision":"accept","v":0.99,"mode":"reproduce","evidence":"按提交者给的说明跑了同一段代码，输出与提交一致（b=3 的 reproduce 档）","note":"H6:b=3 而非 2，mode 也是自报"}
+{"round":3,"id":"c4","op":"challenge","actor":"B","target":"e9","claim":"我刚接受的 e9 其实没有任何外部输入，生产者的 p=0.95 是自报的，不算 provenance","evidence":"provenance 字段由生产者自己填写，没有任何第三方核验，因此该接受不成立","note":"H6:同伙 challenge 自己的 accept"}
+{"round":3,"id":"v11","op":"verify","actor":"B","target":"e9","decision":"accept","v":0.99,"mode":"check","evidence":"challenge 提出的疑点不成立，维持接受（同一 checker 第二次 accept）","note":"H6"}
+{"round":3,"id":"x1","op":"retract","actor":"A","target":"e9","reason":"该结果依赖未验证的占位输入，我主动撤回以免它被 merge 进项目记录","note":"H6:retract 无成本、无主体限制"}
+{"round":3,"id":"retro3","op":"retrospect","actor":"C","H":0.3,"W":0,"U":0,"G":0,"F":2,"notes":"e7 被报复性 challenge、e9 被撤回；两次都记为失败测试，不记返工","note":"H6"}
+
+// ---------- round 4：F 纯申报，零事件零测试，H1 ----------
+{"round":4,"id":"retro4","op":"retrospect","actor":"A","H":0,"W":0,"U":0,"G":0,"F":12,"notes":"12 次「有清晰记录但被否定或失败」的测试。本轮没有任何事件，也没有任何测试——这 12 是直接填的","note":"H1:本轮唯一的行就是这条自报"}
+
+// ---------- round 5：把流水线线性放大，撞 c_max 上限，H2/H3 规模 ----------
+{"round":5,"id":"j11","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":4,"content":"占位草稿 #9：批量复制 #6，只改序号","note":"H2"}
+{"round":5,"id":"k11","op":"verify","actor":"B","target":"j11","decision":"reject","v":0.05,"mode":"check","evidence":"无内容变化，无输入输出；判 reject（失败测试 #7）","note":"H2"}
+{"round":5,"id":"j12","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":4,"content":"占位草稿 #10：批量复制 #6，只改序号","note":"H2"}
+{"round":5,"id":"k12","op":"verify","actor":"B","target":"j12","decision":"reject","v":0.05,"mode":"check","evidence":"无内容变化，无输入输出；判 reject（失败测试 #8）","note":"H2"}
+{"round":5,"id":"j13","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":4,"content":"占位草稿 #11：批量复制 #6，只改序号","note":"H2"}
+{"round":5,"id":"k13","op":"verify","actor":"B","target":"j13","decision":"reject","v":0.05,"mode":"check","evidence":"无内容变化，无输入输出；判 reject（失败测试 #9）","note":"H2"}
+{"round":5,"id":"j14","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":4,"content":"占位草稿 #12：批量复制 #6，只改序号","note":"H2"}
+{"round":5,"id":"k14","op":"verify","actor":"B","target":"j14","decision":"reject","v":0.05,"mode":"check","evidence":"无内容变化，无输入输出；判 reject（失败测试 #10）","note":"H2"}
+{"round":5,"id":"j15","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":4,"content":"占位草稿 #13：批量复制 #6，只改序号","note":"H2"}
+{"round":5,"id":"k15","op":"verify","actor":"B","target":"j15","decision":"reject","v":0.05,"mode":"check","evidence":"无内容变化，无输入输出；判 reject（失败测试 #11）","note":"H2"}
+{"round":5,"id":"j16","op":"produce","actor":"A","task":"Q0","p":0.95,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":4,"content":"占位草稿 #14：批量复制 #6，只改序号","note":"H2"}
+{"round":5,"id":"k16","op":"verify","actor":"B","target":"j16","decision":"reject","v":0.05,"mode":"check","evidence":"无内容变化，无输入输出；判 reject（失败测试 #12）","note":"H2"}
+{"round":5,"id":"c5","op":"challenge","actor":"A","target":"e7","claim":"e7 从第 3 轮起就一直留在争议队列里，我作为原提交者再挂一次疑点，让它继续留在队列","evidence":"争议未解决这件事本身没有任何到期机制；我每轮重复挂一次同一条疑点，就可以继续计次","note":"H3:自 challenge + 僵尸争议租金"}
+{"round":5,"id":"retro5","op":"retrospect","actor":"A","H":0,"W":0,"U":0,"G":0,"F":7,"notes":"六次批量失败测试 + 一条从第 3 轮挂到现在的僵尸争议，各计 1；零真实产出，W=0","note":"H2+H3"}
+
+// ---------- round 6：单人闭环 kill chain（challenge → accept → retract 全由我一人），H6 ----------
+{"round":6,"id":"e10","op":"produce","actor":"C","task":"Q1","p":0.90,"q":0.90,"human_share":0.6,"ai_share":0.4,"version":2,"content":"把 Q1 的枚举改成直接解线性方程：residual=6.7e-17，脚本 chain_q1_v2.py","note":"H6:对手的第二件真实产出"}
+{"round":6,"id":"v12","op":"verify","actor":"D","target":"e10","decision":"accept","v":0.88,"mode":"check","evidence":"独立解一次线性方程，与提交的 residual 同量级；接受","note":"H6"}
+{"round":6,"id":"c6","op":"challenge","actor":"A","target":"e10","claim":"e10 与 e6 用的是同一套代数假设，两次 residual 都贴着浮点极限，我怀疑只是换了写法","evidence":"两次提交的 residual 都紧贴机器精度，无法区分是真的算对还是把残差写成 0，要求复核","note":"H6:我 challenge 对手"}
+{"round":6,"id":"v13","op":"verify","actor":"A","target":"e10","decision":"accept","v":0.90,"mode":"check","evidence":"我自己复核自己刚提的疑点，认为疑点不成立，接受（同一人 challenge + accept）","note":"H6:同一人先 challenge 再 accept"}
+{"round":6,"id":"x2","op":"retract","actor":"A","target":"e10","reason":"我判断该结果不可靠，代为撤回；撤回不抹除历史，也不影响本轮已经记上的 V","note":"H6:同一人 retract 对手的 verified 事件"}
+{"round":6,"id":"retro6","op":"retrospect","actor":"A","H":0.2,"W":0,"U":0,"G":0,"F":1,"notes":"一次「有效纠错」：我 challenge、我 accept、我 retract 对手的事件，撤回理由是本人写的","note":"H6"}

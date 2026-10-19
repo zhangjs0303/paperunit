@@ -1,0 +1,3 @@
+// 难度反转 A：难 criterion w=1 未解 → R=0
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c1","w":1.0,"kind":"rerun","test":"python3 ctmc5_exact.py 输出 5 状态 exact stationary law 与残差"}]}
+{"round":2,"id":"r2","op":"retrospect","actor":"A","notes":"两周推导未完成，cycle decomposition 残差仍 0.3；不提交未达标的 artifact。"}

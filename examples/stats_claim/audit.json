@@ -1,0 +1,115 @@
+{
+  "schema": "paperunit/v1",
+  "target": {
+    "title": "A Synthetic Seed-Sweep Paper: Claimed Accuracy versus Seed Noise",
+    "paper": "examples/stats_claim/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit statistics demo (v0.2)",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "S1: mean accuracy claim 0.923 checked at the paper's own reported precision (default paper_precision margin)",
+      "S2: mean accuracy claim 0.918 with an explicitly preregistered margin of 0.01",
+      "S3: mean accuracy claim 0.918 checked against the versioned margin policy (policy_ref)",
+      "seed-to-seed variability of the reported accuracy across seeds 0-5",
+      "the resolution of the six-seed sweep: 95% interval and minimum detectable effect"
+    ],
+    "not_tested": [
+      "any real dataset, model, paper, or author",
+      "seeds outside 0-5",
+      "statistical significance against a baseline or competing method",
+      "wall-clock training performance (the fixture is deterministic and timed only by the runner)",
+      "multiple-comparison correction across claims (holm_adjust exists but is not applied per-claim)"
+    ]
+  },
+  "claims": [
+    {
+      "id": "S1",
+      "text": "The seed-averaged test accuracy over six seeds is 92.3% (checked at the paper's own reported precision).",
+      "kind": "statistics",
+      "preregistered": true,
+      "check": {
+        "runs_cmd": "python3 code/train.py --seed {seed}",
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "metric_regex": "accuracy=(?P<value>[0-9.]+)",
+        "claim": {
+          "type": "mean",
+          "value": 0.923
+        },
+        "confidence": 0.95,
+        "method": "bootstrap",
+        "resamples": 2000,
+        "rng_seed": 0,
+        "timeout_s": 30
+      }
+    },
+    {
+      "id": "S2",
+      "text": "The seed-averaged test accuracy over six seeds is 91.8% (equivalence margin 1 percentage point).",
+      "kind": "statistics",
+      "preregistered": true,
+      "check": {
+        "runs_cmd": "python3 code/train.py --seed {seed}",
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "metric_regex": "accuracy=(?P<value>[0-9.]+)",
+        "claim": {
+          "type": "mean",
+          "value": 0.918,
+          "equivalence_margin": 0.01
+        },
+        "confidence": 0.95,
+        "method": "bootstrap",
+        "resamples": 2000,
+        "rng_seed": 0,
+        "timeout_s": 30
+      }
+    },
+    {
+      "id": "S3",
+      "text": "The seed-averaged test accuracy over six seeds is 91.8%, checked against the versioned margin policy.",
+      "kind": "statistics",
+      "preregistered": true,
+      "check": {
+        "runs_cmd": "python3 code/train.py --seed {seed}",
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "metric_regex": "accuracy=(?P<value>[0-9.]+)",
+        "claim": {
+          "type": "mean",
+          "value": 0.918,
+          "equivalence_margin": {
+            "mode": "policy_ref",
+            "path": "policies/margin/v1.json",
+            "decision_id": "MARGIN-2026-10-19-01"
+          }
+        },
+        "confidence": 0.95,
+        "method": "bootstrap",
+        "resamples": 2000,
+        "rng_seed": 0,
+        "timeout_s": 30
+      }
+    }
+  ]
+}

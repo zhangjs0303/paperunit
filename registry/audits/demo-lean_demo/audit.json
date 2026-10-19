@@ -1,0 +1,38 @@
+{
+  "schema": "paperunit/v1",
+  "target": {
+    "title": "Lean 4 Proof Check Demo: sorry-free arithmetic lemmas",
+    "paper": "examples/lean_demo/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit formal-checker demo",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "the Lean 4 project builds with `lake build` (when a toolchain is present)",
+      "the development contains no standalone `sorry` placeholders",
+      "optional existence of the named theorem PaperunitDemo.add_comm_demo"
+    ],
+    "not_tested": [
+      "scientific validity of the demo statements (they are core arithmetic lemmas)",
+      "whether the Lean development matches any real paper's definitions",
+      "any Lean file or claim outside this fixture directory",
+      "on a machine without a Lean toolchain, nothing is tested and the claim must be INCONCLUSIVE"
+    ]
+  },
+  "claims": [
+    {
+      "id": "L1",
+      "text": "The Lean 4 formalisation in lean_project builds and its proofs contain no `sorry` placeholders.",
+      "kind": "lean4",
+      "check": {
+        "project_dir": "lean_project",
+        "build_cmd": "lake build",
+        "allow_sorry": false,
+        "theorem": "PaperunitDemo.add_comm_demo",
+        "timeout_s": 180
+      },
+      "preregistered": true
+    }
+  ]
+}

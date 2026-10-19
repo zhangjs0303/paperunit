@@ -1,0 +1,6 @@
+// C2：自报 H=0,W=0,U=0,G=0,F=12,p_e=0.99
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c1","w":1.0,"kind":"rerun","test":"运行 python3 -c 'print(2+2)'，stdout 必须是 4，且与 artifact 声明的 hash 一致"}]}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(2+2)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m1","op":"merge","actor":"B","target":"e1","own_words":"假设是一行 shell 的 stdout 就是 criterion 的全部内容；证据是两位 checker 都复跑过；局限是这只验证了一行脚本，不涉及任何科学结论。"}
+{"round":1,"id":"r1","op":"retrospect","actor":"A","notes":"自报字段全部按最不利方向填。","H":0.0,"W":0,"U":0,"G":0,"F":12}

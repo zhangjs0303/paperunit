@@ -1,0 +1,5 @@
+// prediction 自证：prediction/threshold 是自由文本，照抄实测值即满分
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c1","w":1.0,"kind":"prediction","test":"预测 5 状态 CTMC 的 |piP-pi|_1 上界并登记阈值","threshold":"|piP-pi|_1 < 1e-16"}]}
+{"round":3,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"prediction","prediction":"实测 4.0e-17，所以断言 |piP-pi|_1 = 4.0e-17（本行在跑完之后才写）","threshold":"|piP-pi|_1 < 1e-16"},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.5,"version":1}}
+{"round":3,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"复跑后读数 4e-17，低于登记的阈值，且与 prediction 字段逐字相同。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":3,"id":"m1","op":"merge","actor":"B","target":"e1","own_words":"假设是 prediction 与 threshold 两段自由文本自洽；证据是与实测逐字相同；局限是裁判不做数值比较，也不检查预测是否写在观测之前。"}

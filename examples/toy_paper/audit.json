@@ -1,0 +1,86 @@
+{
+  "schema": "paperunit/v1",
+  "target": {
+    "title": "A Synthetic Toy Paper: Two-Feature Threshold Classification",
+    "paper": "examples/toy_paper/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit demo (v0.2)",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "reported test accuracy",
+      "reported synthetic training time",
+      "reported sample count in stdout",
+      "the fabricated 1,000 held-out example claim"
+    ],
+    "not_tested": [
+      "generalization to any other dataset",
+      "statistical significance or uncertainty",
+      "wall-clock training performance (the fixture emits a fixed synthetic time)",
+      "any claim or code path not listed above"
+    ]
+  },
+  "claims": [
+    {
+      "id": "C1",
+      "text": "On 1,000 held-out examples the classifier reaches 92.3% accuracy.",
+      "kind": "numeric",
+      "check": {
+        "cmd": "python3 code/train.py",
+        "timeout_s": 10,
+        "expect": {
+          "numeric_within": {
+            "number_regex": "accuracy=(?P<value>[0-9.]+)",
+            "target": 0.923,
+            "tolerance": 0.002
+          }
+        }
+      },
+      "preregistered": true
+    },
+    {
+      "id": "C2",
+      "text": "Training takes 4.2 seconds on a laptop CPU (synthetic fixture value).",
+      "kind": "numeric",
+      "check": {
+        "cmd": "python3 code/train.py",
+        "timeout_s": 10,
+        "expect": {
+          "numeric_within": {
+            "number_regex": "train_seconds=(?P<value>[0-9.]+)",
+            "target": 4.2,
+            "tolerance": 2.0
+          }
+        }
+      },
+      "preregistered": true
+    },
+    {
+      "id": "C3",
+      "text": "The released implementation reports the size of its synthetic dataset.",
+      "kind": "stdout",
+      "check": {
+        "cmd": "python3 code/train.py",
+        "timeout_s": 10,
+        "expect": {
+          "stdout_contains": "samples=500"
+        }
+      },
+      "preregistered": true
+    },
+    {
+      "id": "C4",
+      "text": "The evaluation uses 1,000 held-out examples.",
+      "kind": "stdout",
+      "check": {
+        "cmd": "python3 code/train.py",
+        "timeout_s": 10,
+        "expect": {
+          "stdout_regex": "samples=1000\\b"
+        }
+      },
+      "preregistered": true
+    }
+  ]
+}

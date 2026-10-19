@@ -1,0 +1,114 @@
+{
+  "schema": "paperunit/report/v1",
+  "tool": {
+    "name": "paperunit",
+    "version": "0.2.1"
+  },
+  "target": {
+    "title": "Lean 4 Proof Check Demo: sorry-free arithmetic lemmas",
+    "paper": "examples/lean_demo/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit formal-checker demo",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "the Lean 4 project builds with `lake build` (when a toolchain is present)",
+      "the development contains no standalone `sorry` placeholders",
+      "optional existence of the named theorem PaperunitDemo.add_comm_demo"
+    ],
+    "not_tested": [
+      "scientific validity of the demo statements (they are core arithmetic lemmas)",
+      "whether the Lean development matches any real paper's definitions",
+      "any Lean file or claim outside this fixture directory",
+      "on a machine without a Lean toolchain, nothing is tested and the claim must be INCONCLUSIVE"
+    ]
+  },
+  "policy": {
+    "timeout_s": 120.0,
+    "confidence": 0.95
+  },
+  "environment": {
+    "python": "3.13.11",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "audit_file": "examples/lean_demo/audit.json"
+  },
+  "generated_at": "2026-10-19T12:53:30Z",
+  "claims": [
+    {
+      "id": "L1",
+      "kind": "lean4",
+      "text": "The Lean 4 formalisation in lean_project builds and its proofs contain no `sorry` placeholders.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "Lean build succeeded ('lake build', exit 0) and no `sorry` placeholders were found.",
+      "evidence": {
+        "allow_sorry": false,
+        "build_cmd": "lake build",
+        "lean_files": [
+          "PaperunitDemo.lean"
+        ],
+        "project_dir": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/lean_demo/lean_project",
+        "run": {
+          "cmd": "lake build",
+          "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/lean_demo/lean_project",
+          "duration_s": 0.1458,
+          "evidence_sha256": "2d897caa26a58f2c179f27667679144c84a07a1301382b9f884bc99784f29eb7",
+          "exit_code": 0,
+          "stderr_excerpt": "",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_excerpt": "Build completed successfully (3 jobs).\n",
+          "stdout_sha256": "31da234bfb532d5d412798fc13e5b1d95ac91fa58156c6feb697b60d6a371c19",
+          "timed_out": false,
+          "timeout_s": 180.0
+        },
+        "sorry_locations": [],
+        "theorem_check": {
+          "files": [
+            "PaperunitDemo.lean"
+          ],
+          "found": true,
+          "requested": "PaperunitDemo.add_comm_demo"
+        },
+        "toolchain": {
+          "available_cmd": "lean --version",
+          "probes": [
+            {
+              "cmd": "lean --version",
+              "run": {
+                "cmd": "lean --version",
+                "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/lean_demo/lean_project",
+                "duration_s": 0.0409,
+                "evidence_sha256": "38341f02c3c51d16b08fe9040038c0086a3a88cdee8b92c48687c1c3421459e2",
+                "exit_code": 0,
+                "stderr_excerpt": "",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                "stdout_excerpt": "Lean (version 4.35.0, arm64-apple-darwin24.6.0, commit eb6cafb7290e8bd5f2937522d8d804f58f02bafc, Release)\n",
+                "stdout_sha256": "469679dd8c6cec218a7a5e9a36c7a27decc968dacfe057ab3083f0ef43600dac",
+                "timed_out": false,
+                "timeout_s": 30.0
+              }
+            }
+          ]
+        },
+        "trust_model": "A failed Lean build means the audit's formalisation did not go through; it is not evidence against the paper's claim and not evidence of misconduct. Only a successful proof check can support the claim.",
+        "verdict_basis": "successful build + sorry scan"
+      },
+      "uncertainty": null
+    }
+  ],
+  "verdict_counts": {
+    "SUPPORTED": 1,
+    "REFUTED": 0,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 0
+  },
+  "limits": [
+    "scientific validity of the demo statements (they are core arithmetic lemmas)",
+    "whether the Lean development matches any real paper's definitions",
+    "any Lean file or claim outside this fixture directory",
+    "on a machine without a Lean toolchain, nothing is tested and the claim must be INCONCLUSIVE",
+    "An audit tests only the listed claims on the stated commit in the stated environment; it is not a verdict on the paper's scientific value, and it carries no aggregate score."
+  ],
+  "report_sha256": "c4415e895465e6a751e66c1986faffcf9db27aac09d1f585c9d76d73f023f8b7"
+}

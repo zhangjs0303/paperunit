@@ -1,0 +1,30 @@
+==============================================================================
+DeSci 协作系统 v0.2 —— 裁判读数（结算点=merge；标准预注册加权幂等）
+任务=1  produce=1  merge 结算=0  轮次=2
+==============================================================================
+  轮    Ṽ_asof   Ṽ_final     P̃     F̃  fail  merge    R_asof   R_final
+  1     0.000     0.000  0.000  0.000     0      0     0.000     0.000
+  2     0.000     0.000  0.000  0.000     0      0     0.000     0.000
+------------------------------------------------------------------------------
+总 R_asof=0.000   总 R_final=0.000
+
+个体贡献（fate-sharing: 生产者 0.5 / checker 0.5，按 criterion 权重）：
+  （无）
+
+试验级分数 v0.2.1（推荐官方口径：P̃/F̃ 只结算一次，不随轮数重复）：
+  Ṽ_trial(asof)=0.000  Ṽ_trial(final)=0.000  P̃_trial=0.000  F̃_trial=0.000
+  R_trial_asof=0.000   R_trial_final=0.000   （上界 6.0，与轮数无关）
+
+诊断（不是奖励项，只用于复盘/停止条件）：
+  events_per_criterion = 1.0
+  n_produce = 1
+  n_credited = 0
+  n_retract = 0
+  n_reject = 0
+  n_challenge = 0
+  n_merge = 0
+
+非法事件 2 条（不计分）：
+  ! rt6_honest_v2/diagnostics/abstain_probe.jsonl:5/abst1: 未知 op 'abstain'（允许: propose/produce/verify/challenge/merge/retract/retrospect）
+  ! rt6_honest_v2/diagnostics/abstain_probe.jsonl:6/vA: verify.decision 必须是 accept/reject
+==============================================================================

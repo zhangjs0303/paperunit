@@ -1,0 +1,23 @@
+# Q3 预测预注册（写在运行 t3_stiff.py / t3_stiff_v1.py 之前）
+# 写于 2026-10-18，作者 C（producer）/ D（proposer）。
+# 规则：本文件的数字在跑任何 k-sweep 之前写下；事后不得修改。若实测不符，
+#       就在 verify 里如实 reject，不允许回头改写 P1/P2 再当成"预测"。
+
+背景
+  Q1/c2 注册的阈值是绝对误差 max|dpi|_inf < 1e-13（k=0 时实测 2.776e-17）。
+  Q3 要问：把 q(0,1) 乘 10^k、q(1,0) 除 10^k 之后，这个阈值还在吗？
+
+P1（锐利预测，exploratory）
+  绝对阈值 1e-13 在 k <= 2 成立，在 k = 3 首次被突破。
+  即 k* = 3。
+
+P2（稳健预测，本次作为 c2 的验收条件）
+  对全部 k = 0..7，
+      max|dpi|_inf / (u * kappa_pi) < 100
+  其中 u = 2.22e-16（float64 单位舍入误差），
+        kappa_pi = max_i pi_i / min_i pi_i（用精确 Fraction 解算）。
+  理由：float 解的绝对误差由"解向量的动态范围"放大 u 得到，
+        kappa_pi 是可以在跑之前从精确解直接算出的代理量。
+
+P3（定性预测）
+  kappa_pi 随 k 单调增大。

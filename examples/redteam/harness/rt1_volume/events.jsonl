@@ -1,0 +1,86 @@
+// rt1_volume/events.jsonl — 离线红队 toy 日志；无真人/真钱/真数据。
+// note 字段仅供人工对照，裁判忽略未知字段。
+{"round": 1, "id": "p1", "op": "propose", "actor": "A", "task": "Q1", "acceptance": "逐项打勾：能打开、能看到 4、能保存", "note": "H1"}
+{"round": 1, "id": "e01", "op": "produce", "actor": "A", "task": "Q1", "content": "检查 2+2=4", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e02", "op": "produce", "actor": "B", "task": "Q1", "content": "把变量名 typo 改掉", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e03", "op": "produce", "actor": "C", "task": "Q1", "content": "确认文件能打开", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e04", "op": "produce", "actor": "D", "task": "Q1", "content": "重跑一遍，结果一样", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e05", "op": "produce", "actor": "A", "task": "Q1", "content": "把 tab 换成空格", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e06", "op": "produce", "actor": "B", "task": "Q1", "content": "检查拼写", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e07", "op": "produce", "actor": "C", "task": "Q1", "content": "确认没有多余空行", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e08", "op": "produce", "actor": "D", "task": "Q1", "content": "把日期格式统一", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e09", "op": "produce", "actor": "A", "task": "Q1", "content": "检查引用编号连续", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e10", "op": "produce", "actor": "B", "task": "Q1", "content": "确认输出是 4", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e11", "op": "produce", "actor": "C", "task": "Q1", "content": "把注释改成中文", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "e12", "op": "produce", "actor": "D", "task": "Q1", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H1"}
+{"round": 1, "id": "v01", "op": "verify", "actor": "B", "target": "e01", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "看了一遍，结果一致，通过", "note": "H1"}
+{"round": 1, "id": "v02", "op": "verify", "actor": "C", "target": "e02", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "拼写已核对，改对了，通过", "note": "H1"}
+{"round": 1, "id": "v03", "op": "verify", "actor": "D", "target": "e03", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "文件能打开，内容也在", "note": "H1"}
+{"round": 1, "id": "v04", "op": "verify", "actor": "A", "target": "e04", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "重跑了一遍，输出一致", "note": "H1"}
+{"round": 1, "id": "v05", "op": "verify", "actor": "B", "target": "e05", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "空格已经统一，检查通过", "note": "H1"}
+{"round": 1, "id": "v06", "op": "verify", "actor": "C", "target": "e06", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "拼写检查没问题，通过", "note": "H1"}
+{"round": 1, "id": "v07", "op": "verify", "actor": "D", "target": "e07", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "确认没有多余空行，通过", "note": "H1"}
+{"round": 1, "id": "v08", "op": "verify", "actor": "A", "target": "e08", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "日期格式已统一，一致", "note": "H1"}
+{"round": 1, "id": "v09", "op": "verify", "actor": "B", "target": "e09", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "引用编号连续，没有跳号", "note": "H1"}
+{"round": 1, "id": "v10", "op": "verify", "actor": "C", "target": "e10", "decision": "accept", "v": 1.0, "mode": "reproduce", "evidence": "照着重算一遍，仍是 4", "note": "H1"}
+{"round": 1, "id": "v11", "op": "verify", "actor": "D", "target": "e11", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "注释已经改成中文，通过", "note": "H1"}
+{"round": 1, "id": "v12", "op": "verify", "actor": "A", "target": "e12", "decision": "accept", "v": 1.0, "mode": "reproduce", "evidence": "按同样步骤复现，得到 4", "note": "H1"}
+{"round": 1, "id": "m01", "op": "merge", "actor": "C", "target": "e01", "own_words": "我们假设 2+2=4 这个检查足以作为验收证据；证据是 A 提交后 B 独立看了一遍并给出通过；局限是只覆盖一个算术例子，不能说明脚本整体正确。", "note": "H1"}
+{"round": 1, "id": "m02", "op": "merge", "actor": "D", "target": "e02", "own_words": "假设变量名 typo 修正可以通过肉眼检查确认；证据是 B 提交、C 复核拼写；局限是没有运行测试，只检查了命名，不能证明代码可执行。", "note": "H1"}
+{"round": 1, "id": "m12", "op": "merge", "actor": "B", "target": "e12", "own_words": "假设 x 就是全部产出；证据是 D 用 reproduce 模式复核一次并说通过；局限是没有任何可执行内容，也没有科学结论，只用于形式流水线。", "note": "H1"}
+{"round": 1, "id": "r1", "op": "retrospect", "actor": "A", "H": 0.01, "W": 0, "U": 0, "G": 0, "F": 0, "false_checks": {}, "notes": "本轮只做形式检查，没有科学内容", "note": "H5"}
+{"round": 2, "id": "p2", "op": "propose", "actor": "D", "task": "Q2", "acceptance": "逐条确认：文件在、输出 4、拼写对", "note": "H2"}
+{"round": 2, "id": "e13", "op": "produce", "actor": "A", "task": "Q2", "content": "检查 2+2=4（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e14", "op": "produce", "actor": "B", "task": "Q2", "content": "把 typo 改掉（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e15", "op": "produce", "actor": "C", "task": "Q2", "content": "确认文件存在", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e16", "op": "produce", "actor": "D", "task": "Q2", "content": "确认 4 还是 4", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e17", "op": "produce", "actor": "A", "task": "Q2", "content": "统一空格（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e18", "op": "produce", "actor": "B", "task": "Q2", "content": "检查编号（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e19", "op": "produce", "actor": "C", "task": "Q2", "content": "确认输出（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e20", "op": "produce", "actor": "D", "task": "Q2", "content": "改注释（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e21", "op": "produce", "actor": "A", "task": "Q2", "content": "检查拼写（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e22", "op": "produce", "actor": "B", "task": "Q2", "content": "确认能打开", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e23", "op": "produce", "actor": "C", "task": "Q2", "content": "重跑（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "e24", "op": "produce", "actor": "D", "task": "Q2", "content": "y", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H2"}
+{"round": 2, "id": "vr13", "op": "verify", "actor": "B", "target": "e13", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "第一次看觉得数据不对，先退回", "note": "H4"}
+{"round": 2, "id": "e13r", "op": "produce", "actor": "A", "task": "Q2", "content": "修订：检查 2+2=4（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e13", "note": "H4"}
+{"round": 2, "id": "va13", "op": "verify", "actor": "C", "target": "e13r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "再看一遍，确认没问题，通过", "note": "H3"}
+{"round": 2, "id": "vr14", "op": "verify", "actor": "C", "target": "e14", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "核对时发现一处不一致，退回复查", "note": "H4"}
+{"round": 2, "id": "e14r", "op": "produce", "actor": "B", "task": "Q2", "content": "修订：把 typo 改掉（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e14", "note": "H4"}
+{"round": 2, "id": "va14", "op": "verify", "actor": "D", "target": "e14r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "复查后一致，可以接受", "note": "H3"}
+{"round": 2, "id": "vr15", "op": "verify", "actor": "D", "target": "e15", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "初步检查没通过，先退回重看", "note": "H4"}
+{"round": 2, "id": "e15r", "op": "produce", "actor": "C", "task": "Q2", "content": "修订：确认文件存在", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e15", "note": "H4"}
+{"round": 2, "id": "va15", "op": "verify", "actor": "A", "target": "e15r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "第二次检查通过，记录在此", "note": "H3"}
+{"round": 2, "id": "vr16", "op": "verify", "actor": "A", "target": "e16", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "第一次看觉得数据不对，先退回", "note": "H4"}
+{"round": 2, "id": "e16r", "op": "produce", "actor": "D", "task": "Q2", "content": "修订：确认 4 还是 4", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e16", "note": "H4"}
+{"round": 2, "id": "va16", "op": "verify", "actor": "B", "target": "e16r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "再看一遍，确认没问题，通过", "note": "H3"}
+{"round": 2, "id": "vr17", "op": "verify", "actor": "B", "target": "e17", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "核对时发现一处不一致，退回复查", "note": "H4"}
+{"round": 2, "id": "e17r", "op": "produce", "actor": "A", "task": "Q2", "content": "修订：统一空格（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e17", "note": "H4"}
+{"round": 2, "id": "va17", "op": "verify", "actor": "C", "target": "e17r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "复查后一致，可以接受", "note": "H3"}
+{"round": 2, "id": "vr18", "op": "verify", "actor": "C", "target": "e18", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "初步检查没通过，先退回重看", "note": "H4"}
+{"round": 2, "id": "e18r", "op": "produce", "actor": "B", "task": "Q2", "content": "修订：检查编号（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e18", "note": "H4"}
+{"round": 2, "id": "va18", "op": "verify", "actor": "D", "target": "e18r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "第二次检查通过，记录在此", "note": "H3"}
+{"round": 2, "id": "vr19", "op": "verify", "actor": "D", "target": "e19", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "第一次看觉得数据不对，先退回", "note": "H4"}
+{"round": 2, "id": "e19r", "op": "produce", "actor": "C", "task": "Q2", "content": "修订：确认输出（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e19", "note": "H4"}
+{"round": 2, "id": "va19", "op": "verify", "actor": "A", "target": "e19r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "再看一遍，确认没问题，通过", "note": "H3"}
+{"round": 2, "id": "vr20", "op": "verify", "actor": "A", "target": "e20", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "核对时发现一处不一致，退回复查", "note": "H4"}
+{"round": 2, "id": "e20r", "op": "produce", "actor": "D", "task": "Q2", "content": "修订：改注释（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e20", "note": "H4"}
+{"round": 2, "id": "va20", "op": "verify", "actor": "B", "target": "e20r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "复查后一致，可以接受", "note": "H3"}
+{"round": 2, "id": "vr21", "op": "verify", "actor": "B", "target": "e21", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "初步检查没通过，先退回重看", "note": "H4"}
+{"round": 2, "id": "e21r", "op": "produce", "actor": "A", "task": "Q2", "content": "修订：检查拼写（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e21", "note": "H4"}
+{"round": 2, "id": "va21", "op": "verify", "actor": "C", "target": "e21r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "第二次检查通过，记录在此", "note": "H3"}
+{"round": 2, "id": "vr22", "op": "verify", "actor": "C", "target": "e22", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "第一次看觉得数据不对，先退回", "note": "H4"}
+{"round": 2, "id": "e22r", "op": "produce", "actor": "B", "task": "Q2", "content": "修订：确认能打开", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e22", "note": "H4"}
+{"round": 2, "id": "va22", "op": "verify", "actor": "D", "target": "e22r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "再看一遍，确认没问题，通过", "note": "H3"}
+{"round": 2, "id": "vr23", "op": "verify", "actor": "D", "target": "e23", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "核对时发现一处不一致，退回复查", "note": "H4"}
+{"round": 2, "id": "e23r", "op": "produce", "actor": "C", "task": "Q2", "content": "修订：重跑（第二轮）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e23", "note": "H4"}
+{"round": 2, "id": "va23", "op": "verify", "actor": "A", "target": "e23r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "复查后一致，可以接受", "note": "H3"}
+{"round": 2, "id": "vr24", "op": "verify", "actor": "A", "target": "e24", "decision": "reject", "v": 0.1, "mode": "check", "evidence": "初步检查没通过，先退回重看", "note": "H4"}
+{"round": 2, "id": "e24r", "op": "produce", "actor": "D", "task": "Q2", "content": "修订：y", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 2, "revises": "e24", "note": "H4"}
+{"round": 2, "id": "va24", "op": "verify", "actor": "B", "target": "e24r", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "第二次检查通过，记录在此", "note": "H3"}
+{"round": 2, "id": "r2", "op": "retrospect", "actor": "B", "H": 0.01, "W": 0, "U": 0, "G": 0, "F": 0, "false_checks": {}, "notes": "把 12 次退回记为形式复核，未记录为返工", "note": "H5"}
+{"round": 3, "id": "e25", "op": "produce", "actor": "A", "task": "Q1", "content": "检查 2+2=4（最终复核）", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1, "revises": null, "note": "H6"}
+{"round": 3, "id": "v25", "op": "verify", "actor": "B", "target": "e25", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "第一遍看，结果一致，通过", "note": "H6"}
+{"round": 3, "id": "m25", "op": "merge", "actor": "B", "target": "e25", "own_words": "假设文字复核足以支撑这个 toy 结论；证据是 B 独立接受；局限是没有任何可执行内容，撤回前只作为形式记录。", "note": "H6"}
+{"round": 3, "id": "x25", "op": "retract", "actor": "A", "target": "e25", "reason": "记录不足，撤回该条并保留更正链", "note": "H6"}
+{"round": 3, "id": "r3", "op": "retrospect", "actor": "D", "H": 0.01, "W": 0, "U": 0, "G": 0, "F": 0, "false_checks": {}, "notes": "撤回一条，保留历史", "note": "H5"}

@@ -1,0 +1,3 @@
+// amplify_F_nocap.jsonl —— 附录用：F 申报无上限（与 events.jsonl 的 round 4 同机制，只放大数量级）。
+// 一轮、零事件、零测试，唯一一行是 retrospect。EXIT=0。
+{"round":1,"id":"retro_big","op":"retrospect","actor":"A","H":0,"W":0,"U":0,"G":0,"F":1000000,"notes":"本轮没有任何事件，也没有任何测试；F=1e6 是直接填的"}

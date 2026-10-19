@@ -1,0 +1,10 @@
+// 纠错无修复路径：retract 后开新 task 补做，|T|=2 稀释历史 V
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c1","w":1.0,"kind":"rerun","test":"运行 python3 -c 'print(2+2)'，stdout 必须是 4，且与 artifact 声明的 hash 一致"}]}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(2+2)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m1","op":"merge","actor":"B","target":"e1","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}
+{"round":2,"id":"x1","op":"retract","actor":"A","target":"e1","reason":"发现 hash 对应旧版本，撤回并开新任务重做"}
+{"round":2,"id":"pQ2","op":"propose","actor":"A","task":"Q2","question":"可选问题说明","criteria":[{"id":"c1","w":1.0,"kind":"rerun","test":"运行 python3 -c 'print(2+2)'，stdout 必须是 4，且与 artifact 声明的 hash 一致"}]}
+{"round":2,"id":"e2","op":"produce","actor":"A","task":"Q2","criterion":"c1","artifact":{"type":"script","hash":"2","cmd":"python3 -c 'print(2+2)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":2,"id":"v2","op":"verify","actor":"B","target":"e2","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":2,"id":"m2","op":"merge","actor":"B","target":"e2","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}

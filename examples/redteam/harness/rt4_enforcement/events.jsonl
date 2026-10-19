@@ -1,0 +1,41 @@
+// rt4_enforcement/events.jsonl
+// 红队路线 4：测量层与执法层。离线纸面模拟，toy 内容，无真人/真钱/真数据。
+// 设计目标：(a) verified→retracted ratchet；(b) U/G/W 全 0、false_checks 不填；
+// (c) A↔B 互审对；(d) F 自报灌水 + 被拒绝提交仍得 F；(e) 同一日志在 8 种读法下 R/c_i 不同。
+// 全部事件按 RULES_v0 合法；不含自审、重复 merge、无 checker merge 等机械违规。
+
+// ---------- 第 1 轮：先飞快提交，B 立刻 accept，C merge；e1 将在第 3 轮 retract ----------
+{"round":1,"id":"p1","op":"propose","actor":"A","task":"Q1","acceptance":"用纯 Python 枚举 3 状态 toy CTMC 的 exact stationary law，并给出 residual 上界"}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","p":1.0,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"toy 枚举脚本 check_q1.py，输出 residual=1e-16；本事件将在第 3 轮被 retract，用于测试 ratchet"}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","v":1.0,"mode":"reproduce","evidence":"按同一 toy 状态空间重跑，residual 量级一致；声称完成小规模复现，记 b=3"}
+{"round":1,"id":"m1","op":"merge","actor":"C","target":"e1","own_words":"假设是有限状态枚举给出 exact 基准；证据是脚本 residual 达到浮点极限；局限是只覆盖 3 状态 toy，不能外推"}
+{"round":1,"id":"r1","op":"retrospect","actor":"A","H":30,"W":0,"U":0,"G":0,"F":0,"notes":"记录协调耗时 30（草案未写单位）；无返工、无刷分、无无证据 merge；false_checks 不填"}
+
+// ---------- 第 2 轮：A↔B 互审对 + 四份实质重复提交；G 自报 0 ----------
+{"round":2,"id":"p2","op":"propose","actor":"B","task":"Q2","acceptance":"对 2 节点 toy Ising 枚举 exact joint，并验证 W=0 时独立、W!=0 时耦合方向"}
+{"round":2,"id":"e2","op":"produce","actor":"B","task":"Q2","p":1.0,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"toy Ising 枚举，W=0 与 W=2 两组输出；此事件将在第 4 轮被 retract"}
+{"round":2,"id":"v2","op":"verify","actor":"A","target":"e2","decision":"accept","v":1.0,"mode":"reproduce","evidence":"重跑 toy 枚举，marginal 与 joint 一致；A 复核 B 的产出（互审对的一半），记 b=3"}
+{"round":2,"id":"e3","op":"produce","actor":"A","task":"Q2","p":1.0,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"同一 toy Ising 结果的第二份提交，内容与 e2 几乎相同，用于测试重复提交是否被 G 捕获"}
+{"round":2,"id":"v3","op":"verify","actor":"B","target":"e3","decision":"accept","v":1.0,"mode":"reproduce","evidence":"重跑同一 toy 脚本并比对输出；B 复核 A 的产出（互审对的另一半），记 b=3"}
+{"round":2,"id":"e4","op":"produce","actor":"B","task":"Q2","p":1.0,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":2,"revises":"e2","content":"第三份提交，仍是同一 toy Ising 结果；显式 revises e2，用于测试 retract 是否沿更正链传播"}
+{"round":2,"id":"v4","op":"verify","actor":"A","target":"e4","decision":"accept","v":1.0,"mode":"reproduce","evidence":"再次重跑并比对，未发现新信息；仍按 reproduce 记 b=3，互审对继续互相抬分"}
+{"round":2,"id":"e5","op":"produce","actor":"A","task":"Q2","p":1.0,"q":1.0,"human_share":0.5,"ai_share":0.5,"version":1,"content":"第四份提交，同一 toy 结果；四份提交共享同一脚本和同一输出，实质是重复提交"}
+{"round":2,"id":"v5","op":"verify","actor":"B","target":"e5","decision":"accept","v":1.0,"mode":"reproduce","evidence":"第四次重跑同一脚本，输出相同；互审对继续互相抬分，未做额外独立检查"}
+{"round":2,"id":"m2","op":"merge","actor":"C","target":"e3","own_words":"假设是 toy 枚举的 exact joint；证据是 joint 与 marginal 自洽；局限是只做了 2 节点，且 e2/e3/e4/e5 实质重复"}
+{"round":2,"id":"r2","op":"retrospect","actor":"B","H":30,"W":0,"U":0,"G":0,"F":0,"notes":"无返工、无重复提交、无互抬分；false_checks 不填"}
+
+// ---------- 第 3 轮：e1 retract 但第 1 轮分数不回溯；C challenge e2，A 再 verify 洗白 ----------
+{"round":3,"id":"x1","op":"retract","actor":"A","target":"e1","reason":"复核发现 e1 的 toy 状态数漏了一个，原 residual 结论不成立；按默认 R 不回溯"}
+{"round":3,"id":"c1","op":"challenge","actor":"C","target":"e2","claim":"e2 的 W=0 分支可能用了未归一化 joint，marginal 与 joint 的一致性没有被独立验证","evidence":"指出待检查的归一化步骤，并给出一个 2x2 toy 反例，要求重新计算 partition function"}
+{"round":3,"id":"v6","op":"verify","actor":"A","target":"e2","decision":"accept","v":1.0,"mode":"reproduce","evidence":"重新跑了一遍并口头确认，未逐行检查 C 指出的归一化步骤；仍记 b=3，第二次为同一事件拿复核分"}
+{"round":3,"id":"r3","op":"retrospect","actor":"C","H":30,"W":0,"U":0,"G":0,"F":5,"notes":"自报 5 次有清晰记录的失败测试；实际只有 c1 一次争议；false_checks 不填"}
+
+// ---------- 第 4 轮：e2 retract，但第 2 轮 e2 的 V/P 与 c_i 都不回溯；H 填 0 ----------
+{"round":4,"id":"x2","op":"retract","actor":"B","target":"e2","reason":"C 的归一化疑点成立，e2 的 W=0 结论撤回；e3/e4/e5 未撤回，ratchet 保留分数"}
+{"round":4,"id":"r4","op":"retrospect","actor":"C","H":0,"W":0,"U":0,"G":0,"F":0,"notes":"撤回轮：H 填 0，W/U/G 全 0，false_checks 不填；撤回本身没有惩罚"}
+
+// ---------- 第 5 轮：故意提交会被 reject 的事件，测试 F_derived 与「拒绝仍有 c_i」 ----------
+{"round":5,"id":"p3","op":"propose","actor":"D","task":"Q3","acceptance":"给出一个可被独立 checker 复核或拒绝的 toy 提交，用于测试 F 项是否奖励被拒绝的提交"}
+{"round":5,"id":"e6","op":"produce","actor":"D","task":"Q3","p":1.0,"q":0.1,"human_share":1.0,"ai_share":0.0,"version":1,"content":"故意缺少可执行脚本的 toy 提交；预期被 reject，用于测试 F_t 与 verifier 的拒绝激励"}
+{"round":5,"id":"v7","op":"verify","actor":"A","target":"e6","decision":"reject","v":0.1,"mode":"check","evidence":"复算发现没有可执行脚本，无法复现；按规则拒绝，但拒绝本身仍给 verifier 记 b*q=0.2"}
+{"round":5,"id":"r5","op":"retrospect","actor":"A","H":0,"W":0,"U":0,"G":0,"F":0,"notes":"被拒绝的提交让 F_derived=1；U/G/W 仍填 0，false_checks 不填"}

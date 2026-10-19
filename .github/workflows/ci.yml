@@ -1,0 +1,65 @@
+name: ci
+
+# Paperunit CI: run the unit tests on the supported Python versions, then build
+# the static audit registry from `registry/audits/` and assert the output exists.
+# No third-party dependencies are installed and no step reaches the network
+# beyond the standard Actions checkout/setup.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Show the Python version
+        run: python --version
+
+      # paperunit is stdlib-only and is imported from the checkout, so no
+      # `pip install` step is needed. This keeps CI offline-friendly.
+      - name: Import check
+        run: |
+          python -c "import paperunit; print('paperunit', paperunit.__version__)"
+          python -c "from paperunit.registry import build_registry; print('registry ok')"
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+
+      # Needs the `registry build` subcommand of the CLI (implemented in
+      # paperunit/cli.py). If that subcommand is ever removed, this step fails
+      # loudly instead of silently skipping the registry check.
+      # `mkdir -p` keeps this working when registry/audits/ is still empty and
+      # therefore absent from a fresh checkout (git does not track empty dirs).
+      - name: Build static registry
+        run: |
+          mkdir -p registry/audits
+          python -m paperunit registry build --audits-dir registry/audits --out registry/site
+
+      - name: Assert registry output
+        run: |
+          test -f registry/site/index.json
+          test -f registry/site/index.html
+          python -m json.tool registry/site/index.json > /dev/null

@@ -1,0 +1,50 @@
+// rt3_paperwork/events.jsonl —— 红队模拟：paperwork 攻击（p_e / q_e / merge gate / retract 洗白）
+// 场景：4 名成员，3 轮，2 个 toy 任务；所有 produce 的 content 都是无信息字符串。
+// 目标：让系统对四个问题全部"有记录可答"，而科学内容为零。
+// 标注约定：每行末 note 字段 → 该事件支撑的机制编号（H1..H6），setup 表示只搭状态机。
+// 边界：无真人、无真钱、无真实数据；一切内容为占位文本。
+
+// ---------------- Round 1：一次完整 propose→produce→verify→merge，内容全空 ----------------
+{"round":1,"id":"p1","op":"propose","actor":"A","task":"Q1","acceptance":"清单覆盖 3 项、每项可与模板逐字对齐，不新增任何字段","note":"setup"}
+
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","content":"整理了一个清单。","p":1.0,"q":1.0,"human_share":0.0,"ai_share":1.0,"version":1,"revises":null,"note":"H1+H2+H4"}
+{"round":1,"id":"e2","op":"produce","actor":"A","task":"Q1","content":"检查了两个数是否相等。","p":1.0,"q":1.0,"human_share":0.0,"ai_share":1.0,"version":1,"revises":null,"note":"H1+H2+H4"}
+{"round":1,"id":"e3","op":"produce","actor":"A","task":"Q1","content":"把三项合并成一页。","p":1.0,"q":1.0,"human_share":0.0,"ai_share":1.0,"version":1,"revises":null,"note":"H1+H2+H4"}
+
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","v":1.0,"mode":"check","evidence":"按同一模板逐字比对，未发现差异。","note":"H3"}
+{"round":1,"id":"v2","op":"verify","actor":"C","target":"e2","decision":"accept","v":1.0,"mode":"reproduce","evidence":"重跑同一模板，输出与 e1 逐字一致。","note":"H2+H3"}
+{"round":1,"id":"v3","op":"verify","actor":"B","target":"e3","decision":"accept","v":1.0,"mode":"check","evidence":"按同一模板逐字比对，未发现差异。","note":"H3"}
+
+{"round":1,"id":"m1","op":"merge","actor":"C","target":"e1","own_words":"假设：清单本身即为证据；证据：复核者按模板接受了该事件；局限：没有任何来源、工具或时间戳，也没有独立复算。","note":"H3"}
+{"round":1,"id":"m2","op":"merge","actor":"A","target":"e2","own_words":"假设：两个数相等即可作为检查结论；证据：复核者按模板接受；局限：未记录这两个数是什么，也没有任何可复算的产物。","note":"H3"}
+{"round":1,"id":"m3","op":"merge","actor":"B","target":"e3","own_words":"假设：三项合并后仍可用模板对齐；证据：复核者按模板接受；局限：合并前后的具体项目未列出，无法核对合并是否守恒。","note":"H3"}
+
+{"round":1,"id":"r1","op":"retrospect","actor":"A","H":0,"W":0,"U":0,"G":0,"F":0,"notes":"记录耗时为 0（自报）；U=G=0（自报）；本轮无可避免返工（自报）","note":"H6"}
+
+// ---------------- Round 2：争议→弃号重交（严格合法路径）；撤回旧事件并以同文重交 ----------------
+{"round":2,"id":"p2","op":"propose","actor":"A","task":"Q2","acceptance":"两轮内给出可复算的对齐记录，且不新增任何字段","note":"setup"}
+
+{"round":2,"id":"e4","op":"produce","actor":"A","task":"Q2","content":"新增了一项记录。","p":1.0,"q":1.0,"human_share":0.0,"ai_share":1.0,"version":1,"revises":null,"note":"H3+H4"}
+{"round":2,"id":"c1","op":"challenge","actor":"D","target":"e4","claim":"e4 没有给出来源、工具与时间戳，无法判断这项记录是否真的产生过。","evidence":"对照接口：produce 只有 p 一个数字，没有 refs 字段可供核验，也没有工具字段。","note":"H3+H6"}
+
+{"round":2,"id":"e4b","op":"produce","actor":"A","task":"Q2","content":"新增了一项记录。","p":1.0,"q":1.0,"human_share":0.0,"ai_share":1.0,"version":2,"revises":"e4","note":"H1+H2+H3+H4"}
+{"round":2,"id":"v4","op":"verify","actor":"B","target":"e4b","decision":"accept","v":1.0,"mode":"check","evidence":"接受；与 e4 内容逐字相同，但本 id 尚未被挑战。","note":"H3"}
+{"round":2,"id":"m4","op":"merge","actor":"C","target":"e4b","own_words":"假设：同一内容换 id 后即为可纳入的记录；证据：复核者在新 id 上按模板接受；局限：c1 对 e4 的质疑仍挂在旧 id 上，未被回答，也未被解决。","note":"H3"}
+
+{"round":2,"id":"x1","op":"retract","actor":"A","target":"e3","reason":"复核记录未附来源与工具，按更正链撤回并由新版本替代。","note":"H5"}
+{"round":2,"id":"e5","op":"produce","actor":"A","task":"Q1","content":"把三项合并成一页。","p":1.0,"q":1.0,"human_share":0.0,"ai_share":1.0,"version":2,"revises":"e3","note":"H5"}
+{"round":2,"id":"v5","op":"verify","actor":"B","target":"e5","decision":"accept","v":1.0,"mode":"check","evidence":"按同一模板逐字比对，未发现差异。","note":"H3+H5"}
+{"round":2,"id":"m5","op":"merge","actor":"C","target":"e5","own_words":"假设：更正版替代撤回版即完成修正；证据：内容与被撤回版本逐字相同；局限：更正未增加任何来源，实质是同一句话的第二次计分。","note":"H3+H5"}
+
+{"round":2,"id":"r2","op":"retrospect","actor":"B","H":0,"W":0,"U":0,"G":0,"F":0,"notes":"返工次数 W=0（自报，尽管本轮发生一次弃号重交与一次撤回重交）；记录耗时 H=0（自报）","note":"H6"}
+
+// ---------------- Round 3：同文第三次计分；挑战→accept 复位→撤回给挑战者补发 correct 分 ----------------
+{"round":3,"id":"e6","op":"produce","actor":"A","task":"Q1","content":"把三项合并成一页。","p":1.0,"q":1.0,"human_share":0.0,"ai_share":1.0,"version":3,"revises":"e5","note":"H5"}
+{"round":3,"id":"v6","op":"verify","actor":"C","target":"e6","decision":"accept","v":1.0,"mode":"reproduce","evidence":"重跑同一模板，输出与 e5 逐字一致。","note":"H2+H3"}
+{"round":3,"id":"m6","op":"merge","actor":"A","target":"e6","own_words":"假设：第二次更正版即为当前记录；证据：内容与前一版逐字相同；局限：没有任何新增证据，只改变了版本号与提交者。","note":"H3+H5"}
+
+{"round":3,"id":"c2","op":"challenge","actor":"D","target":"e6","claim":"e6 与 e5 逐字相同，却又有独立复核记录，质疑该复核发生过。","evidence":"对比两条 produce 的 content 字段：完全一致，且两者都没有 refs、工具或时间戳字段。","note":"H5+H6"}
+{"round":3,"id":"v7","op":"verify","actor":"B","target":"e6","decision":"accept","v":1.0,"mode":"check","evidence":"接受；复核者与被质疑内容无关，按模板逐字比对。","note":"H3"}
+{"round":3,"id":"x2","op":"retract","actor":"D","target":"e6","reason":"内容与 e5 重复且无新增证据，按更正链撤回，历史保留。","note":"H5"}
+
+{"round":3,"id":"r3","op":"retrospect","actor":"C","H":0,"W":0,"U":0,"G":0,"F":0,"notes":"记录耗时 H=0（自报）；无证据接受 U=0（自报）；gaming G=0（自报）","note":"H6"}

@@ -1,0 +1,7 @@
+// 3 deliberate violations; EXIT=2, not a vulnerability
+{"round": 1, "id": "p", "op": "propose", "actor": "A", "task": "Q", "acceptance": "12345678"}
+{"round": 1, "id": "e1", "op": "produce", "actor": "A", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1}
+{"round": 1, "id": "v1", "op": "verify", "actor": "A", "target": "e1", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "e2", "op": "produce", "actor": "A", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1}
+{"round": 1, "id": "v2", "op": "verify", "actor": "B", "target": "e2", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "short"}
+{"round": 1, "id": "m1", "op": "merge", "actor": "B", "target": "e1", "own_words": "假设 x 足够作为证据；证据是没有任何独立复核；局限是这段文字本身不能通过状态机检查。"}

@@ -1,0 +1,627 @@
+{
+  "schema": "paperunit/report/v1",
+  "tool": {
+    "name": "paperunit",
+    "version": "0.2.1"
+  },
+  "target": {
+    "title": "A Synthetic Seed-Sweep Paper: Claimed Accuracy versus Seed Noise",
+    "paper": "examples/stats_claim/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit statistics demo (v0.2)",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "S1: mean accuracy claim 0.923 checked at the paper's own reported precision (default paper_precision margin)",
+      "S2: mean accuracy claim 0.918 with an explicitly preregistered margin of 0.01",
+      "S3: mean accuracy claim 0.918 checked against the versioned margin policy (policy_ref)",
+      "seed-to-seed variability of the reported accuracy across seeds 0-5",
+      "the resolution of the six-seed sweep: 95% interval and minimum detectable effect"
+    ],
+    "not_tested": [
+      "any real dataset, model, paper, or author",
+      "seeds outside 0-5",
+      "statistical significance against a baseline or competing method",
+      "wall-clock training performance (the fixture is deterministic and timed only by the runner)",
+      "multiple-comparison correction across claims (holm_adjust exists but is not applied per-claim)"
+    ]
+  },
+  "policy": {
+    "timeout_s": 120.0,
+    "confidence": 0.95
+  },
+  "environment": {
+    "python": "3.13.11",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "audit_file": "examples/stats_claim/audit.json"
+  },
+  "generated_at": "2026-10-19T12:53:29Z",
+  "claims": [
+    {
+      "id": "S1",
+      "kind": "statistics",
+      "text": "The seed-averaged test accuracy over six seeds is 92.3% (checked at the paper's own reported precision).",
+      "preregistered": true,
+      "verdict": "REFUTED",
+      "reason": "observed mean 0.918 differs from the claimed value 0.923 by a gap of 0.005, which exceeds the equivalence margin 0.001, and the interval [0.915333, 0.920667] excludes the claimed value; the minimum detectable effect (MDE) of this sweep is 0.0043402.",
+      "evidence": {
+        "claim": {
+          "type": "mean",
+          "value": 0.923
+        },
+        "margin_policy": {
+          "decision_id": null,
+          "margin": 0.001,
+          "mode": "paper_precision",
+          "note": "margin derived from the paper's own reported precision: 3 decimal place(s) -> 0.001",
+          "policy_version": null,
+          "source": "paper_precision"
+        },
+        "metric_regex": "accuracy=(?P<value>[0-9.]+)",
+        "preregistered": true,
+        "resolution": {
+          "ci_excludes_claimed": true,
+          "ci_half_width": 0.0026666666666666505,
+          "equivalence_margin": 0.001,
+          "margin_decision_id": null,
+          "margin_mode": "paper_precision",
+          "margin_note": "margin derived from the paper's own reported precision: 3 decimal place(s) -> 0.001",
+          "margin_policy_version": null,
+          "margin_source": "paper_precision",
+          "mde_alpha": 0.05,
+          "mde_exceeds_margin": true,
+          "mde_over_margin": 4.340197157092964,
+          "mde_power": 0.8,
+          "min_detectable_effect": 0.004340197157092964,
+          "n": 6,
+          "note": "Seed sweep n=6 with observed SD=0.00379473 gives a 0.95 interval half-width of 0.00266667 and a minimum detectable effect (MDE) of 0.0043402 at alpha=0.05, power=0.8 (one-sample, two-sided). The MDE (0.0043402) is larger than the claim's equivalence margin (0.001): this sweep cannot resolve differences as small as the margin. The observed gap (0.005) is larger than the MDE, so the observed discrepancy is above this sweep's noise floor. The percentile bootstrap interval over so few values is coarse and can understate its width; the MDE is reported so that the interval alone is not treated as decisive.",
+          "observed_gap": 0.0050000000000000044,
+          "observed_gap_exceeds_mde": true
+        },
+        "runs": [
+          {
+            "cmd": "python3 code/train.py --seed 0",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0461,
+            "evidence_sha256": "ab05bffa145501f204950ef5da6cbedf0001ca40053ab1cc7fe63dd46fc3d07a",
+            "exit_code": 0,
+            "seed": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9160\nseed=0\nflips=42\nthreshold=0.000833\n",
+            "stdout_sha256": "62a432f41bf9f40eac67a19cf87f90aff9db422b3d212ba8020cbe88ce333e6e",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 1",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0462,
+            "evidence_sha256": "8ccbece0e6bf04ce4ef2583ce3dc3109aa901de622d9887c21429e06af7e5238",
+            "exit_code": 0,
+            "seed": 1,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9200\nseed=1\nflips=40\nthreshold=0.000833\n",
+            "stdout_sha256": "990b82c8f1dc6750b2f2a6653ccb5da5a18f016398112ca1cf34bb3f3e5aefe6",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 2",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.046,
+            "evidence_sha256": "eafd48726d93421b1ec885d984995dab02b03cb3655db3a2fca7aea53f61afe0",
+            "exit_code": 0,
+            "seed": 2,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9140\nseed=2\nflips=43\nthreshold=0.000833\n",
+            "stdout_sha256": "c06b6132f12f56bef1dbe266f3d221ba5905700d420c3c4d0c1c587c4a833306",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 3",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0451,
+            "evidence_sha256": "de6e12aca96738d8994ac0a6ffa24a6ef41a8ef8361256b4509fa83d7040e4c5",
+            "exit_code": 0,
+            "seed": 3,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9220\nseed=3\nflips=39\nthreshold=0.000833\n",
+            "stdout_sha256": "6fc2279cce45b1d0566b0a10ff4f51563921963aed6b255d9af9afe88b5a95b1",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 4",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0479,
+            "evidence_sha256": "4fb8966ff5940e4aa01508e3b09378c2ba7ac365048367d64609845db24d9bad",
+            "exit_code": 0,
+            "seed": 4,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9140\nseed=4\nflips=43\nthreshold=0.001667\n",
+            "stdout_sha256": "d930a32e93fcfe997b3cd3ceb5c42929aca1fb442d287901eb2e7143a9c8c0f5",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 5",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0482,
+            "evidence_sha256": "3523e9debdec9f6e70271b45bf8f70f164dff80ff2c1aa22cee97eac097b5ca4",
+            "exit_code": 0,
+            "seed": 5,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9220\nseed=5\nflips=39\nthreshold=0.000833\n",
+            "stdout_sha256": "32738c966c5cb5881c2e9720ea89f439196ed30dc4be75f6095b44431096cf0b",
+            "timed_out": false,
+            "timeout_s": 30.0
+          }
+        ],
+        "runs_cmd": "python3 code/train.py --seed {seed}",
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "values": [
+          {
+            "seed": 0,
+            "value": 0.916
+          },
+          {
+            "seed": 1,
+            "value": 0.92
+          },
+          {
+            "seed": 2,
+            "value": 0.914
+          },
+          {
+            "seed": 3,
+            "value": 0.922
+          },
+          {
+            "seed": 4,
+            "value": 0.914
+          },
+          {
+            "seed": 5,
+            "value": 0.922
+          }
+        ]
+      },
+      "uncertainty": {
+        "ci_half_width": 0.0026666666666666505,
+        "ci_high": 0.9206666666666666,
+        "ci_low": 0.9153333333333333,
+        "ci_method": "bootstrap_percentile_linear",
+        "claimed_value": 0.923,
+        "confidence": 0.95,
+        "effect": -0.0050000000000000044,
+        "equivalence_margin": 0.001,
+        "margin_decision_id": null,
+        "margin_mode": "paper_precision",
+        "margin_policy_version": null,
+        "margin_source": "paper_precision",
+        "mean": 0.918,
+        "method": "bootstrap",
+        "min_detectable_effect": 0.004340197157092964,
+        "n": 6,
+        "note": "percentile bootstrap with n=6 is a coarse resolution check; read it together with the minimum detectable effect, not as a calibrated posterior statement.",
+        "resamples": 2000,
+        "sd": 0.0037947331922020587,
+        "se": 0.0015491933384829684,
+        "seed": 0,
+        "values_sha256": "fe04cd5b51a479a0fb67d5b8edb610af7726802766f18a912d03825b3b850892"
+      }
+    },
+    {
+      "id": "S2",
+      "kind": "statistics",
+      "text": "The seed-averaged test accuracy over six seeds is 91.8% (equivalence margin 1 percentage point).",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "observed mean 0.918 is within the equivalence margin 0.01 of the claimed value 0.918 (gap 0); the interval [0.915333, 0.920667] is reported for resolution; the minimum detectable effect (MDE) of this sweep is 0.0043402.",
+      "evidence": {
+        "claim": {
+          "equivalence_margin": 0.01,
+          "type": "mean",
+          "value": 0.918
+        },
+        "margin_policy": {
+          "decision_id": null,
+          "margin": 0.01,
+          "mode": "fixed",
+          "note": "explicit margin 0.01 declared in the audit file",
+          "policy_version": null,
+          "source": "explicit numeric equivalence_margin"
+        },
+        "metric_regex": "accuracy=(?P<value>[0-9.]+)",
+        "preregistered": true,
+        "resolution": {
+          "ci_excludes_claimed": false,
+          "ci_half_width": 0.0026666666666666505,
+          "equivalence_margin": 0.01,
+          "margin_decision_id": null,
+          "margin_mode": "fixed",
+          "margin_note": "explicit margin 0.01 declared in the audit file",
+          "margin_policy_version": null,
+          "margin_source": "explicit numeric equivalence_margin",
+          "mde_alpha": 0.05,
+          "mde_exceeds_margin": false,
+          "mde_over_margin": 0.4340197157092964,
+          "mde_power": 0.8,
+          "min_detectable_effect": 0.004340197157092964,
+          "n": 6,
+          "note": "Seed sweep n=6 with observed SD=0.00379473 gives a 0.95 interval half-width of 0.00266667 and a minimum detectable effect (MDE) of 0.0043402 at alpha=0.05, power=0.8 (one-sample, two-sided). The MDE (0.0043402) is no larger than the claim's equivalence margin (0.01): the sweep's resolution is at least as fine as the claimed tolerance. The observed gap (0) is inside the claim's equivalence margin, so the tolerance window is met; this is a tolerance match, not a significance claim. The percentile bootstrap interval over so few values is coarse and can understate its width; the MDE is reported so that the interval alone is not treated as decisive.",
+          "observed_gap": 0.0,
+          "observed_gap_exceeds_mde": false
+        },
+        "runs": [
+          {
+            "cmd": "python3 code/train.py --seed 0",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0473,
+            "evidence_sha256": "ab05bffa145501f204950ef5da6cbedf0001ca40053ab1cc7fe63dd46fc3d07a",
+            "exit_code": 0,
+            "seed": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9160\nseed=0\nflips=42\nthreshold=0.000833\n",
+            "stdout_sha256": "62a432f41bf9f40eac67a19cf87f90aff9db422b3d212ba8020cbe88ce333e6e",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 1",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0477,
+            "evidence_sha256": "8ccbece0e6bf04ce4ef2583ce3dc3109aa901de622d9887c21429e06af7e5238",
+            "exit_code": 0,
+            "seed": 1,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9200\nseed=1\nflips=40\nthreshold=0.000833\n",
+            "stdout_sha256": "990b82c8f1dc6750b2f2a6653ccb5da5a18f016398112ca1cf34bb3f3e5aefe6",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 2",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0473,
+            "evidence_sha256": "eafd48726d93421b1ec885d984995dab02b03cb3655db3a2fca7aea53f61afe0",
+            "exit_code": 0,
+            "seed": 2,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9140\nseed=2\nflips=43\nthreshold=0.000833\n",
+            "stdout_sha256": "c06b6132f12f56bef1dbe266f3d221ba5905700d420c3c4d0c1c587c4a833306",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 3",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0484,
+            "evidence_sha256": "de6e12aca96738d8994ac0a6ffa24a6ef41a8ef8361256b4509fa83d7040e4c5",
+            "exit_code": 0,
+            "seed": 3,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9220\nseed=3\nflips=39\nthreshold=0.000833\n",
+            "stdout_sha256": "6fc2279cce45b1d0566b0a10ff4f51563921963aed6b255d9af9afe88b5a95b1",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 4",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.048,
+            "evidence_sha256": "4fb8966ff5940e4aa01508e3b09378c2ba7ac365048367d64609845db24d9bad",
+            "exit_code": 0,
+            "seed": 4,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9140\nseed=4\nflips=43\nthreshold=0.001667\n",
+            "stdout_sha256": "d930a32e93fcfe997b3cd3ceb5c42929aca1fb442d287901eb2e7143a9c8c0f5",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 5",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0482,
+            "evidence_sha256": "3523e9debdec9f6e70271b45bf8f70f164dff80ff2c1aa22cee97eac097b5ca4",
+            "exit_code": 0,
+            "seed": 5,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9220\nseed=5\nflips=39\nthreshold=0.000833\n",
+            "stdout_sha256": "32738c966c5cb5881c2e9720ea89f439196ed30dc4be75f6095b44431096cf0b",
+            "timed_out": false,
+            "timeout_s": 30.0
+          }
+        ],
+        "runs_cmd": "python3 code/train.py --seed {seed}",
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "values": [
+          {
+            "seed": 0,
+            "value": 0.916
+          },
+          {
+            "seed": 1,
+            "value": 0.92
+          },
+          {
+            "seed": 2,
+            "value": 0.914
+          },
+          {
+            "seed": 3,
+            "value": 0.922
+          },
+          {
+            "seed": 4,
+            "value": 0.914
+          },
+          {
+            "seed": 5,
+            "value": 0.922
+          }
+        ]
+      },
+      "uncertainty": {
+        "ci_half_width": 0.0026666666666666505,
+        "ci_high": 0.9206666666666666,
+        "ci_low": 0.9153333333333333,
+        "ci_method": "bootstrap_percentile_linear",
+        "claimed_value": 0.918,
+        "confidence": 0.95,
+        "effect": 0.0,
+        "equivalence_margin": 0.01,
+        "margin_decision_id": null,
+        "margin_mode": "fixed",
+        "margin_policy_version": null,
+        "margin_source": "explicit numeric equivalence_margin",
+        "mean": 0.918,
+        "method": "bootstrap",
+        "min_detectable_effect": 0.004340197157092964,
+        "n": 6,
+        "note": "percentile bootstrap with n=6 is a coarse resolution check; read it together with the minimum detectable effect, not as a calibrated posterior statement.",
+        "resamples": 2000,
+        "sd": 0.0037947331922020587,
+        "se": 0.0015491933384829684,
+        "seed": 0,
+        "values_sha256": "fe04cd5b51a479a0fb67d5b8edb610af7726802766f18a912d03825b3b850892"
+      }
+    },
+    {
+      "id": "S3",
+      "kind": "statistics",
+      "text": "The seed-averaged test accuracy over six seeds is 91.8%, checked against the versioned margin policy.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "observed mean 0.918 is within the equivalence margin 0.0005 of the claimed value 0.918 (gap 0); the interval [0.915333, 0.920667] is reported for resolution; the minimum detectable effect (MDE) of this sweep is 0.0043402.",
+      "evidence": {
+        "claim": {
+          "equivalence_margin": {
+            "decision_id": "MARGIN-2026-10-19-01",
+            "mode": "policy_ref",
+            "path": "policies/margin/v1.json"
+          },
+          "type": "mean",
+          "value": 0.918
+        },
+        "margin_policy": {
+          "decision_id": "MARGIN-2026-10-19-01",
+          "margin": 0.0005,
+          "mode": "policy_ref",
+          "note": "margin 0.0005 read from policy policies/margin/v1.json (decision MARGIN-2026-10-19-01): Demo policy: half of the paper's last reported digit. Example of the future governance hook; changing this file changes future audits only.",
+          "policy_version": "v1",
+          "source": "policies/margin/v1.json"
+        },
+        "metric_regex": "accuracy=(?P<value>[0-9.]+)",
+        "preregistered": true,
+        "resolution": {
+          "ci_excludes_claimed": false,
+          "ci_half_width": 0.0026666666666666505,
+          "equivalence_margin": 0.0005,
+          "margin_decision_id": "MARGIN-2026-10-19-01",
+          "margin_mode": "policy_ref",
+          "margin_note": "margin 0.0005 read from policy policies/margin/v1.json (decision MARGIN-2026-10-19-01): Demo policy: half of the paper's last reported digit. Example of the future governance hook; changing this file changes future audits only.",
+          "margin_policy_version": "v1",
+          "margin_source": "policies/margin/v1.json",
+          "mde_alpha": 0.05,
+          "mde_exceeds_margin": true,
+          "mde_over_margin": 8.680394314185929,
+          "mde_power": 0.8,
+          "min_detectable_effect": 0.004340197157092964,
+          "n": 6,
+          "note": "Seed sweep n=6 with observed SD=0.00379473 gives a 0.95 interval half-width of 0.00266667 and a minimum detectable effect (MDE) of 0.0043402 at alpha=0.05, power=0.8 (one-sample, two-sided). The MDE (0.0043402) is larger than the claim's equivalence margin (0.0005): this sweep cannot resolve differences as small as the margin. The observed gap (0) is inside the claim's equivalence margin, so the tolerance window is met; this is a tolerance match, not a significance claim. The percentile bootstrap interval over so few values is coarse and can understate its width; the MDE is reported so that the interval alone is not treated as decisive.",
+          "observed_gap": 0.0,
+          "observed_gap_exceeds_mde": false
+        },
+        "runs": [
+          {
+            "cmd": "python3 code/train.py --seed 0",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0465,
+            "evidence_sha256": "ab05bffa145501f204950ef5da6cbedf0001ca40053ab1cc7fe63dd46fc3d07a",
+            "exit_code": 0,
+            "seed": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9160\nseed=0\nflips=42\nthreshold=0.000833\n",
+            "stdout_sha256": "62a432f41bf9f40eac67a19cf87f90aff9db422b3d212ba8020cbe88ce333e6e",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 1",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0462,
+            "evidence_sha256": "8ccbece0e6bf04ce4ef2583ce3dc3109aa901de622d9887c21429e06af7e5238",
+            "exit_code": 0,
+            "seed": 1,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9200\nseed=1\nflips=40\nthreshold=0.000833\n",
+            "stdout_sha256": "990b82c8f1dc6750b2f2a6653ccb5da5a18f016398112ca1cf34bb3f3e5aefe6",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 2",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0465,
+            "evidence_sha256": "eafd48726d93421b1ec885d984995dab02b03cb3655db3a2fca7aea53f61afe0",
+            "exit_code": 0,
+            "seed": 2,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9140\nseed=2\nflips=43\nthreshold=0.000833\n",
+            "stdout_sha256": "c06b6132f12f56bef1dbe266f3d221ba5905700d420c3c4d0c1c587c4a833306",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 3",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0463,
+            "evidence_sha256": "de6e12aca96738d8994ac0a6ffa24a6ef41a8ef8361256b4509fa83d7040e4c5",
+            "exit_code": 0,
+            "seed": 3,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9220\nseed=3\nflips=39\nthreshold=0.000833\n",
+            "stdout_sha256": "6fc2279cce45b1d0566b0a10ff4f51563921963aed6b255d9af9afe88b5a95b1",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 4",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.046,
+            "evidence_sha256": "4fb8966ff5940e4aa01508e3b09378c2ba7ac365048367d64609845db24d9bad",
+            "exit_code": 0,
+            "seed": 4,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9140\nseed=4\nflips=43\nthreshold=0.001667\n",
+            "stdout_sha256": "d930a32e93fcfe997b3cd3ceb5c42929aca1fb442d287901eb2e7143a9c8c0f5",
+            "timed_out": false,
+            "timeout_s": 30.0
+          },
+          {
+            "cmd": "python3 code/train.py --seed 5",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/stats_claim",
+            "duration_s": 0.0493,
+            "evidence_sha256": "3523e9debdec9f6e70271b45bf8f70f164dff80ff2c1aa22cee97eac097b5ca4",
+            "exit_code": 0,
+            "seed": 5,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.9220\nseed=5\nflips=39\nthreshold=0.000833\n",
+            "stdout_sha256": "32738c966c5cb5881c2e9720ea89f439196ed30dc4be75f6095b44431096cf0b",
+            "timed_out": false,
+            "timeout_s": 30.0
+          }
+        ],
+        "runs_cmd": "python3 code/train.py --seed {seed}",
+        "seeds": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "values": [
+          {
+            "seed": 0,
+            "value": 0.916
+          },
+          {
+            "seed": 1,
+            "value": 0.92
+          },
+          {
+            "seed": 2,
+            "value": 0.914
+          },
+          {
+            "seed": 3,
+            "value": 0.922
+          },
+          {
+            "seed": 4,
+            "value": 0.914
+          },
+          {
+            "seed": 5,
+            "value": 0.922
+          }
+        ]
+      },
+      "uncertainty": {
+        "ci_half_width": 0.0026666666666666505,
+        "ci_high": 0.9206666666666666,
+        "ci_low": 0.9153333333333333,
+        "ci_method": "bootstrap_percentile_linear",
+        "claimed_value": 0.918,
+        "confidence": 0.95,
+        "effect": 0.0,
+        "equivalence_margin": 0.0005,
+        "margin_decision_id": "MARGIN-2026-10-19-01",
+        "margin_mode": "policy_ref",
+        "margin_policy_version": "v1",
+        "margin_source": "policies/margin/v1.json",
+        "mean": 0.918,
+        "method": "bootstrap",
+        "min_detectable_effect": 0.004340197157092964,
+        "n": 6,
+        "note": "percentile bootstrap with n=6 is a coarse resolution check; read it together with the minimum detectable effect, not as a calibrated posterior statement.",
+        "resamples": 2000,
+        "sd": 0.0037947331922020587,
+        "se": 0.0015491933384829684,
+        "seed": 0,
+        "values_sha256": "fe04cd5b51a479a0fb67d5b8edb610af7726802766f18a912d03825b3b850892"
+      }
+    }
+  ],
+  "verdict_counts": {
+    "SUPPORTED": 2,
+    "REFUTED": 1,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 0
+  },
+  "limits": [
+    "any real dataset, model, paper, or author",
+    "seeds outside 0-5",
+    "statistical significance against a baseline or competing method",
+    "wall-clock training performance (the fixture is deterministic and timed only by the runner)",
+    "multiple-comparison correction across claims (holm_adjust exists but is not applied per-claim)",
+    "An audit tests only the listed claims on the stated commit in the stated environment; it is not a verdict on the paper's scientific value, and it carries no aggregate score."
+  ],
+  "report_sha256": "2cdf296b76194e9fded7fd2a0cffd260d8da360dfba3748d205fd04b2f1ba1e4"
+}

@@ -1,0 +1,186 @@
+{
+  "schema": "paperunit/report/v1",
+  "tool": {
+    "name": "paperunit",
+    "version": "0.2.1"
+  },
+  "target": {
+    "title": "A Synthetic Toy Paper: Two-Feature Threshold Classification",
+    "paper": "examples/toy_paper/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit demo (v0.2)",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "reported test accuracy",
+      "reported synthetic training time",
+      "reported sample count in stdout",
+      "the fabricated 1,000 held-out example claim"
+    ],
+    "not_tested": [
+      "generalization to any other dataset",
+      "statistical significance or uncertainty",
+      "wall-clock training performance (the fixture emits a fixed synthetic time)",
+      "any claim or code path not listed above"
+    ]
+  },
+  "policy": {
+    "timeout_s": 120.0,
+    "confidence": 0.95
+  },
+  "environment": {
+    "python": "3.13.11",
+    "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+    "audit_file": "examples/toy_paper/audit.json"
+  },
+  "generated_at": "2026-10-19T12:53:27Z",
+  "claims": [
+    {
+      "id": "C1",
+      "kind": "numeric",
+      "text": "On 1,000 held-out examples the classifier reaches 92.3% accuracy.",
+      "preregistered": true,
+      "verdict": "REFUTED",
+      "reason": "expectation failed: numeric_within: value 0.918 vs 0.923 +/- 0.002",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "value 0.918 vs 0.923 +/- 0.002",
+            "passed": false,
+            "rule": "numeric_within"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 code/train.py",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/toy_paper",
+            "duration_s": 0.0327,
+            "evidence_sha256": "8022c979b65171d3a46638d76cf818261a3c24148c92b641cb344c931a126c7c",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.918\ntrain_seconds=4.200\nseed=0\nthreshold=0.000833\n",
+            "stdout_sha256": "b5bf0677eeff703ecc9014271213d2983f814d1db42ccd733ce9b761060dd1bd",
+            "timed_out": false,
+            "timeout_s": 10.0
+          }
+        ]
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "C2",
+      "kind": "numeric",
+      "text": "Training takes 4.2 seconds on a laptop CPU (synthetic fixture value).",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "all 1 expectation(s) passed",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "value 4.2 vs 4.2 +/- 2.0",
+            "passed": true,
+            "rule": "numeric_within"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 code/train.py",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/toy_paper",
+            "duration_s": 0.0315,
+            "evidence_sha256": "8022c979b65171d3a46638d76cf818261a3c24148c92b641cb344c931a126c7c",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.918\ntrain_seconds=4.200\nseed=0\nthreshold=0.000833\n",
+            "stdout_sha256": "b5bf0677eeff703ecc9014271213d2983f814d1db42ccd733ce9b761060dd1bd",
+            "timed_out": false,
+            "timeout_s": 10.0
+          }
+        ]
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "C3",
+      "kind": "stdout",
+      "text": "The released implementation reports the size of its synthetic dataset.",
+      "preregistered": true,
+      "verdict": "SUPPORTED",
+      "reason": "all 1 expectation(s) passed",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "'samples=500'",
+            "passed": true,
+            "rule": "stdout_contains"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 code/train.py",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/toy_paper",
+            "duration_s": 0.0308,
+            "evidence_sha256": "8022c979b65171d3a46638d76cf818261a3c24148c92b641cb344c931a126c7c",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.918\ntrain_seconds=4.200\nseed=0\nthreshold=0.000833\n",
+            "stdout_sha256": "b5bf0677eeff703ecc9014271213d2983f814d1db42ccd733ce9b761060dd1bd",
+            "timed_out": false,
+            "timeout_s": 10.0
+          }
+        ]
+      },
+      "uncertainty": null
+    },
+    {
+      "id": "C4",
+      "kind": "stdout",
+      "text": "The evaluation uses 1,000 held-out examples.",
+      "preregistered": true,
+      "verdict": "REFUTED",
+      "reason": "expectation failed: stdout_regex: samples=1000\\b",
+      "evidence": {
+        "expectations": [
+          {
+            "detail": "samples=1000\\b",
+            "passed": false,
+            "rule": "stdout_regex"
+          }
+        ],
+        "runs": [
+          {
+            "cmd": "python3 code/train.py",
+            "cwd": "/Users/zhangjunshuo/Desktop/课题组/26 summer/DeSci/paperunit/examples/toy_paper",
+            "duration_s": 0.03,
+            "evidence_sha256": "8022c979b65171d3a46638d76cf818261a3c24148c92b641cb344c931a126c7c",
+            "exit_code": 0,
+            "stderr_excerpt": "",
+            "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stdout_excerpt": "samples=500\naccuracy=0.918\ntrain_seconds=4.200\nseed=0\nthreshold=0.000833\n",
+            "stdout_sha256": "b5bf0677eeff703ecc9014271213d2983f814d1db42ccd733ce9b761060dd1bd",
+            "timed_out": false,
+            "timeout_s": 10.0
+          }
+        ]
+      },
+      "uncertainty": null
+    }
+  ],
+  "verdict_counts": {
+    "SUPPORTED": 2,
+    "REFUTED": 2,
+    "INCONCLUSIVE": 0,
+    "NOT_RUN": 0
+  },
+  "limits": [
+    "generalization to any other dataset",
+    "statistical significance or uncertainty",
+    "wall-clock training performance (the fixture emits a fixed synthetic time)",
+    "any claim or code path not listed above",
+    "An audit tests only the listed claims on the stated commit in the stated environment; it is not a verdict on the paper's scientific value, and it carries no aggregate score."
+  ],
+  "report_sha256": "bb1fe04dfd2d421be5826affff6040e63d0cfe6d241f71f7345352d2e620d798"
+}

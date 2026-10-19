@@ -1,0 +1,45 @@
+{
+  "schema": "paperunit/v1",
+  "target": {
+    "title": "Symbolic Causal-Mask Check with z3: A Counterexample-Finding Demo",
+    "paper": "examples/z3_demo/paper.md",
+    "repo_commit": "synthetic-fixture-v1 (not a git checkout)",
+    "audited_by": "paperunit formal-checker demo",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "for every 0 <= i < j < 32, the correct causal mask construction blocks attention from i to j",
+      "the deliberately broken construction, expected to admit a future attention edge (REFUTED)",
+      "the exact counterexample positions reported by the SMT solver for the broken construction"
+    ],
+    "not_tested": [
+      "any concrete Python implementation's floating-point behavior (see examples/causal_mask)",
+      "sequence lengths above 32",
+      "mask constructions other than the two encoded predicates",
+      "anything outside the two claims listed below; without z3-solver both claims are INCONCLUSIVE by design"
+    ]
+  },
+  "claims": [
+    {
+      "id": "Z1",
+      "text": "The correct causal-mask construction blocks every attention edge to a future position for all sequence lengths T <= 32.",
+      "kind": "external",
+      "check": {
+        "cmd": "python3 code/check_mask_z3.py --variant correct",
+        "timeout_s": 60
+      },
+      "preregistered": true
+    },
+    {
+      "id": "Z2",
+      "text": "DETECTOR SELF-TEST: the deliberately broken mask construction (no future mask) must be REFUTED with a concrete counterexample.",
+      "kind": "external",
+      "check": {
+        "cmd": "python3 code/check_mask_z3.py --variant broken",
+        "timeout_s": 60
+      },
+      "preregistered": false
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "paperunit/v1",
+  "target": {
+    "title": "Dogfood audit of the DeSci red-team scoring harness",
+    "paper": "vendored copy of the DeSci red-team harness (read-only; see harness/README.md)",
+    "repo_commit": "unversioned local tree: score.py sha256 7d0ba01971be..., verify_all.py sha256 b0faa2d49cf4...",
+    "audited_by": "paperunit demo (v0.2)",
+    "date": "2026-10-19"
+  },
+  "scope": {
+    "tested": [
+      "baseline total R printed by score.py",
+      "rt1_volume total R printed by score.py",
+      "exit status of verify_all.py",
+      "one deliberately false expectation used as a detector self-test"
+    ],
+    "not_tested": [
+      "scientific validity or incentive properties of the red-team scoring rules",
+      "behavior on modified, additional, or regenerated logs",
+      "floating-point internals of score.py or score_v2.py",
+      "anything outside the four claims listed here"
+    ]
+  },
+  "claims": [
+    {
+      "id": "R1",
+      "text": "The frozen v0 scorer reproduces the baseline total R = 9.450.",
+      "kind": "stdout",
+      "check": {
+        "cmd": "python3 score.py baseline.jsonl",
+        "cwd": "harness",
+        "timeout_s": 60,
+        "expect": {
+          "stdout_contains": "总 R = 9.450"
+        }
+      },
+      "preregistered": true
+    },
+    {
+      "id": "R2",
+      "text": "The frozen v0 scorer reproduces the rt1_volume total R = 92.997.",
+      "kind": "stdout",
+      "check": {
+        "cmd": "python3 score.py rt1_volume/events.jsonl",
+        "cwd": "harness",
+        "timeout_s": 60,
+        "expect": {
+          "stdout_contains": "总 R = 92.997"
+        }
+      },
+      "preregistered": true
+    },
+    {
+      "id": "R3",
+      "text": "The red-team's verify_all.py self-check exits 0.",
+      "kind": "exit",
+      "check": {
+        "cmd": "python3 verify_all.py",
+        "cwd": "harness",
+        "timeout_s": 60,
+        "expect": {
+          "exit_code": 0
+        }
+      },
+      "preregistered": true
+    },
+    {
+      "id": "R4",
+      "text": "SELF-TEST: the deliberately wrong expectation 总 R = 999.999 must be REFUTED; this demonstrates that the audit catches a false claim.",
+      "kind": "stdout",
+      "check": {
+        "cmd": "python3 score.py baseline.jsonl",
+        "cwd": "harness",
+        "timeout_s": 60,
+        "expect": {
+          "stdout_contains": "总 R = 999.999"
+        }
+      },
+      "preregistered": false
+    }
+  ]
+}

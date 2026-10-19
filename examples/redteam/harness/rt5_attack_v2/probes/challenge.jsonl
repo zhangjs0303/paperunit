@@ -1,0 +1,9 @@
+// challenge 无牙：对已结算事件的实质质疑不改分，未解决争议不阻止后续 merge
+{"round":1,"id":"pQ1","op":"propose","actor":"A","task":"Q1","question":"可选问题说明","criteria":[{"id":"c1","w":0.5,"kind":"rerun","test":"运行 python3 -c 'print(2+2)'，stdout 必须是 4，且与 artifact 声明的 hash 一致"},{"id":"c2","w":0.5,"kind":"rerun","test":"运行 python3 -c 'print(1+1+1+1)'，stdout 必须是 4，且与 artifact 的 hash 一致"}]}
+{"round":1,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(2+2)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":1,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":1,"id":"m1","op":"merge","actor":"B","target":"e1","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}
+{"round":2,"id":"ch1","op":"challenge","actor":"D","target":"e1","claim":"该 criterion 只是 print(2+2)，不能作为任何科学结论的验收标准。","evidence":"读 propose 的 test 字段即可确认：断言只涉及一个常数加法。"}
+{"round":2,"id":"e2","op":"produce","actor":"A","task":"Q1","criterion":"c2","artifact":{"type":"script","hash":"0","cmd":"python3 -c 'print(1+1+1+1)'","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":1.0,"version":1,"p_e":0.99}}
+{"round":2,"id":"v2","op":"verify","actor":"E","target":"e2","decision":"accept","evidence":"复跑该一行脚本，stdout 是 4，与 hash 声明一致，接受。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":2,"id":"m2","op":"merge","actor":"B","target":"e2","own_words":"假设是一行脚本的输出足以验收；证据是我与另一位 checker 都复跑过；局限是它不涉及任何科学结论。"}

@@ -1,0 +1,9 @@
+// score.py permits challenge on verified + merge with unresolved dispute
+{"round": 1, "id": "p", "op": "propose", "actor": "A", "task": "Q", "acceptance": "12345678"}
+{"round": 1, "id": "e1", "op": "produce", "actor": "A", "task": "Q", "content": "x", "p": 1.0, "q": 1.0, "human_share": 0.0, "ai_share": 1.0, "version": 1}
+{"round": 1, "id": "v1", "op": "verify", "actor": "B", "target": "e1", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "0123456789"}
+{"round": 1, "id": "c1", "op": "challenge", "actor": "C", "target": "e1", "claim": "这个结论没有独立运行记录，只有口头通过，要求补充证据", "evidence": "我复查了记录，只看到文字通过，没有可执行输出或时间戳，按验收条件不算完整"}
+{"round": 1, "id": "v2", "op": "verify", "actor": "D", "target": "e1", "decision": "accept", "v": 1.0, "mode": "check", "evidence": "补看记录后认为形式满足，接受"}
+{"round": 1, "id": "m1", "op": "merge", "actor": "B", "target": "e1", "own_words": "假设文字复核足以支撑这个 toy 结论；证据是 B 和 D 两次独立接受；局限是 C 提出的记录缺失争议仍未解决，merge 只代表当前门槛。"}
+{"round": 1, "id": "x1", "op": "retract", "actor": "A", "target": "e1", "reason": "记录不足，撤回该条并保留更正链"}
+{"round": 1, "id": "r", "op": "retrospect", "actor": "A", "H": 0.01, "W": 0, "U": 0, "G": 0, "F": 0, "false_checks": {}}

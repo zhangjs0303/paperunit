@@ -1,0 +1,12 @@
+// 诚实但任务难度高：6 轮、2 任务、4 criterion、只解出 2 个，1 次真实失败
+{"round":1,"id":"pQ1","op":"propose","actor":"D","task":"Q1","question":"5 状态 CTMC 的 exact stationary law 与 cycle 分解","criteria":[{"id":"c1","w":0.6,"kind":"rerun","test":"python3 ctmc5_exact.py 输出 5 状态 exact stationary law、残差与 cycle 分解"},{"id":"c2","w":0.4,"kind":"prediction","test":"证明 W=0 时 |piP-pi|_1 < 1e-12 且 cycle 净流残差 < 1e-12","threshold":"|piP-pi|_1 < 1e-12"}]}
+{"round":2,"id":"e1","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"sha256:9f1c4d2a","cmd":"python3 ctmc5_exact.py","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.3,"version":1}}
+{"round":2,"id":"v1","op":"verify","actor":"B","target":"e1","decision":"reject","evidence":"复算发现 P 被转置：平稳分布取的是右特征向量，残差 0.31 而不是 1e-12。","rerun":{"ok":false,"own_hash":"0"}}
+{"round":3,"id":"e2","op":"produce","actor":"A","task":"Q1","criterion":"c1","artifact":{"type":"script","hash":"sha256:7b02ee91","cmd":"python3 ctmc5_exact.py --left-eig","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.3,"version":2}}
+{"round":3,"id":"v2","op":"verify","actor":"B","target":"e2","decision":"accept","evidence":"左特征向量重算：平稳分布与枚举一致，残差 4e-16，cycle 净流残差 1e-15。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":3,"id":"m3","op":"merge","actor":"C","target":"e2","own_words":"假设是有限状态精确枚举即 ground truth；证据是独立重算特征向量与 cycle 分解一致；局限是只到 5 状态，未给有限时间误差。"}
+{"round":4,"id":"pQ2","op":"propose","actor":"D","task":"Q2","question":"W=0 时 2 节点 Ising 的独立性","criteria":[{"id":"c1","w":0.7,"kind":"counterexample","test":"搜索 W=0 时 joint 与 marginals 不一致的数值反例并输出搜索日志"},{"id":"c2","w":0.3,"kind":"prediction","test":"给出有限时间误差上界 < 1e-9 的推导","threshold":"err < 1e-9"}]}
+{"round":5,"id":"e3","op":"produce","actor":"A","task":"Q2","criterion":"c1","artifact":{"type":"script","hash":"sha256:31aa0c77","cmd":"python3 ising2_enum.py --search","seed":0},"prov":{"sources":["https://example.org/toy-reference"],"ai_share":0.2,"version":1}}
+{"round":5,"id":"v3","op":"verify","actor":"C","target":"e3","decision":"accept","evidence":"重跑 4 状态枚举，joint 与 marginals 的独立性 residual = 4e-17，反例搜索 1e6 点全空。","rerun":{"ok":true,"own_hash":"0"}}
+{"round":5,"id":"m5","op":"merge","actor":"B","target":"e3","own_words":"假设是 4 状态枚举穷尽；证据是独立复跑 residual 4e-17；局限是 toy，未覆盖 W≠0。"}
+{"round":6,"id":"r6","op":"retrospect","actor":"A","notes":"c2 的有限时间上界与 Q1.c2 的预测两条都没证出来，不提交；两次返工来自转置错误。","H":4.5,"W":2,"U":0,"G":0,"F":1}

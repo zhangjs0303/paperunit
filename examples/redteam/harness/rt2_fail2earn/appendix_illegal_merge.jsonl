@@ -1,0 +1,8 @@
+// appendix_illegal_merge.jsonl —— 附录用：证明「challenge 之后 merge 会被裁判打回」。
+// 这不是提交用的攻击日志：EXIT=2，含 `!` 行，按规则「已判非法，非漏洞」。
+// 正因为这条非法，events.jsonl 里的 veto-DoS 只能用「该轮不存在 merge 行」来体现。
+{"round":1,"id":"p9","op":"propose","actor":"C","task":"Q9","acceptance":"枚举 3 状态 toy 链并给出 residual 上界"}
+{"round":1,"id":"e90","op":"produce","actor":"C","task":"Q9","p":0.9,"q":0.9,"human_share":0.6,"ai_share":0.4,"version":1,"content":"枚举平稳分布，residual=2.2e-16，脚本 toy9.py","note":"H4"}
+{"round":1,"id":"v90","op":"verify","actor":"D","target":"e90","decision":"accept","v":0.85,"mode":"check","evidence":"独立重写平稳方程，TV=3e-13","note":"H4"}
+{"round":1,"id":"c90","op":"challenge","actor":"A","target":"e90","claim":"提交者未说明 residual 取自哪一版代码与哪台机器，无法排除转置","evidence":"按相同输入顺序手动代入，结果与提交的最后一列不一致，要求复核","note":"H4:veto"}
+{"round":1,"id":"m90","op":"merge","actor":"D","target":"e90","own_words":"假设是有限状态链唯一平稳；证据是两条独立路径同量级 residual；局限是只做 3 状态 toy 不能外推","note":"H4:这一步在 disputed 上会非法"}

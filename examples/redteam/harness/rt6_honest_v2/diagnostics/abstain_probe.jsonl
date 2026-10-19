@@ -1,0 +1,7 @@
+// abstain 探针：v0 草案 §3 说 abstain 是"任何操作的合法退出动作"，v0.2 的 7 个 op 里没有它。
+// 这个文件只用来机械检验裁判器是否接受 abstain，因此只有 1 个 task、2 个事件。
+{"round":1,"id":"pA","op":"propose","actor":"A","task":"QA","criteria":[{"id":"c1","w":1.0,"kind":"rerun","test":"python3 qa.py 打印 4，hash 与 artifact 一致"}]}
+{"round":1,"id":"eA","op":"produce","actor":"A","task":"QA","criterion":"c1","artifact":{"type":"script","hash":"sha256:x","cmd":"python3 qa.py"},"prov":{"sources":["qa 脚本注释"],"ai_share":0.1,"version":1}}
+{"round":1,"id":"abst1","op":"abstain","actor":"B","target":"eA","reason":"我无法判断 hash 是否对应当前脚本版本"}
+{"round":1,"id":"vA","op":"verify","actor":"B","target":"eA","decision":"abstain","evidence":"我复跑了，但无法判断 stdout 是 4 是否真的满足 criterion"}
+{"round":2,"id":"vB","op":"verify","actor":"C","target":"eA","decision":"accept","evidence":"我复跑 qa.py，stdout 是 4，与 artifact.hash 声明一致","rerun":{"ok":true,"own_hash":"sha256:y"}}

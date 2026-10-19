@@ -1,0 +1,10 @@
+// two honest-style toy events, H=1.0h
+{"round": 1, "id": "p1", "op": "propose", "actor": "A", "task": "R1", "acceptance": "枚举 2 状态 CTMC 的 exact stationary law，并给出 residual 数值"}
+{"round": 1, "id": "e1", "op": "produce", "actor": "A", "task": "R1", "content": "P=[[0.9,0.1],[0.2,0.8]]，解 pi P=pi 得 pi=(2/3,1/3)，residual=1e-16，脚本 toy_chain.py", "p": 0.9, "q": 0.8, "human_share": 0.5, "ai_share": 0.5, "version": 1, "revises": null}
+{"round": 1, "id": "v1", "op": "verify", "actor": "B", "target": "e1", "decision": "accept", "v": 0.8, "mode": "check", "evidence": "独立重算 pi=(0.6667,0.3333)，与提交一致，residual=2e-16"}
+{"round": 1, "id": "m1", "op": "merge", "actor": "C", "target": "e1", "own_words": "假设有限 2 状态链收敛到唯一平稳分布；证据是枚举残差达到浮点极限且独立重算一致；局限是只覆盖 toy 规模。"}
+{"round": 1, "id": "p2", "op": "propose", "actor": "D", "task": "R2", "acceptance": "对 2 节点 Ising W=0 枚举 exact joint 并验证独立性"}
+{"round": 1, "id": "e2", "op": "produce", "actor": "D", "task": "R2", "content": "枚举 4 状态 joint；W=0 时 joint=marginal product，TV=0，脚本 toy_ising.py", "p": 0.9, "q": 0.8, "human_share": 0.5, "ai_share": 0.5, "version": 1, "revises": null}
+{"round": 1, "id": "v2", "op": "verify", "actor": "A", "target": "e2", "decision": "accept", "v": 0.8, "mode": "check", "evidence": "重跑枚举，独立性 residual=3e-17，与提交一致"}
+{"round": 1, "id": "m2", "op": "merge", "actor": "B", "target": "e2", "own_words": "假设 2 节点枚举给出 exact ground truth；证据是独立重跑 residual 接近机器精度；局限是不能外推到大规模模型。"}
+{"round": 1, "id": "r", "op": "retrospect", "actor": "A", "H": 1.0, "W": 0, "U": 0, "G": 0, "F": 0, "false_checks": {}}
